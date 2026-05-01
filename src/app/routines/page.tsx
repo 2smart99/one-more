@@ -41,11 +41,23 @@ export default function RoutinesPage() {
 
   async function createRoutine() {
     if (!title.trim() || !user?.id) return;
-    const { data } = await supabase
+
+    // Ensure user exists first
+    await supabase
+      .from('users')
+      .upsert({ tg_id: user.id, first_name: user.first_name, username: user.username });
+
+    const { data, error } = await supabase
       .from('routines')
       .insert({ user_id: user.id, title: title.trim(), day_of_week: day })
       .select()
       .single();
+
+    if (error) {
+      console.error('Error creating routine:', error);
+      return;
+    }
+
     if (data) {
       setRoutines((prev) => [...prev, data]);
       setTitle('');

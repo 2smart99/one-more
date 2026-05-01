@@ -47,11 +47,23 @@ export default function ExercisesPage() {
 
   async function createCustom() {
     if (!newName.trim() || !user?.id) return;
-    const { data } = await supabase
+
+    // Ensure user exists first
+    await supabase
+      .from('users')
+      .upsert({ tg_id: user.id, first_name: user.first_name, username: user.username });
+
+    const { data, error } = await supabase
       .from('exercises')
       .insert({ user_id: user.id, name: newName.trim(), muscle_group: newMuscle, is_custom: true })
       .select()
       .single();
+
+    if (error) {
+      console.error('Error creating exercise:', error);
+      return;
+    }
+
     if (data) {
       setExercises((prev) => [...prev, data]);
       setNewName('');
