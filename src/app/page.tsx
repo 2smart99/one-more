@@ -79,10 +79,15 @@ export default function HomePage() {
     <div className="min-h-screen bg-bg pb-24">
       {/* Header */}
       <div className="px-5 pt-8 pb-5">
-        <p className="text-t2 text-sm font-medium">{todayCapitalized}</p>
-        <h1 className="text-t1 text-3xl font-extrabold tracking-tight leading-tight mt-0.5">
-          Ciao, {user.first_name}
-        </h1>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-t2 text-sm font-medium">{todayCapitalized}</p>
+            <h1 className="text-t1 text-3xl font-extrabold tracking-tight leading-tight mt-0.5">
+              Ciao, {user.first_name}
+            </h1>
+          </div>
+          <span className="text-[10px] text-t2/50 font-medium">v1.0</span>
+        </div>
       </div>
 
       <div className="space-y-5">
