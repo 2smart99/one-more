@@ -53,7 +53,7 @@ export default function HistoryPage() {
           const vol = totalVolume(wSets);
           const dayBest1RM = Math.max(0, ...wSets.map((s) => brzycki1RM(s.weight, s.reps)));
           volumeTrend.push({ date, volume: vol });
-          oneRMTrend.push({ date, volume: dayBest1RM });
+          oneRMTrend.push({ date, volume: dayBest1RM }); // volume field reused for 1RM values
           if (vol > bestVolume) bestVolume = vol;
           if (dayBest1RM > best1RM) best1RM = dayBest1RM;
           lastDate = date;

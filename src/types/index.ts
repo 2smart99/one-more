@@ -83,7 +83,7 @@ export interface VolumeDataPoint {
 
 export interface OneRMDataPoint {
   date: string;
-  one_rm: number;
+  volume: number;
 }
 
 export interface ExerciseHistory {
