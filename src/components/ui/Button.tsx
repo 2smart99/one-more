@@ -2,7 +2,7 @@
 
 import { ReactNode, ButtonHTMLAttributes } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'dark';
 type Size = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,16 +14,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-accent text-white shadow-soft hover:bg-accent-dark active:bg-accent-dark',
-  secondary: 'bg-surface text-text-primary shadow-soft border border-gray-100 hover:bg-gray-50',
+  primary: 'bg-accent text-white shadow-accent-glow hover:bg-accent-dark active:bg-accent-dark',
+  secondary: 'bg-surface text-text-primary border border-border hover:bg-gray-50',
   ghost: 'bg-transparent text-text-secondary hover:bg-gray-100',
   danger: 'bg-danger/10 text-danger hover:bg-danger/20',
+  dark: 'bg-primary text-white hover:bg-gray-800',
 };
 
 const sizes: Record<Size, string> = {
   sm: 'px-4 py-2 text-sm',
-  md: 'px-6 py-3 text-base',
-  lg: 'px-8 py-4 text-lg',
+  md: 'px-5 py-3 text-sm',
+  lg: 'px-6 py-4 text-base',
 };
 
 export function Button({

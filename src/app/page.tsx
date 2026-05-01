@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic';
 import { useEffect } from 'react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { supabase } from '@/lib/supabase';
-import { Header } from '@/components/layout/Header';
 import { DaySchedule } from '@/components/home/DaySchedule';
 import { QuickStats } from '@/components/home/QuickStats';
 import { Button } from '@/components/ui/Button';
@@ -25,48 +24,46 @@ export default function HomePage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-3 border-accent border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  const greeting = (() => {
-    const h = new Date().getHours();
-    if (h < 12) return 'Buongiorno';
-    if (h < 18) return 'Buon pomeriggio';
-    return 'Buonasera';
-  })();
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <div className="px-4 space-y-4">
-      {/* Header */}
-      <Header
-        title={`${greeting}, ${user.first_name} 👋`}
-        subtitle="Pronto per allenarti?"
-      />
+    <div className="min-h-screen bg-background pb-20">
+      {/* Hero header */}
+      <div className="hero-gradient px-5 pt-8 pb-8">
+        <p className="text-blue-300 text-xs font-semibold uppercase tracking-widest mb-1">{greeting}</p>
+        <h1 className="text-white text-3xl font-extrabold tracking-tight leading-tight">
+          {user.first_name}
+        </h1>
+        <p className="text-blue-200 text-sm mt-1 font-medium">Pronto per il prossimo allenamento?</p>
+      </div>
 
-      {/* Quick stats */}
-      <QuickStats userId={user.id} />
+      {/* Stats — float over hero */}
+      <div className="mt-4 space-y-4">
+        <QuickStats userId={user.id} />
 
-      {/* Today's schedule */}
-      <section>
-        <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide px-1 mb-2">
-          Scheda di Oggi
-        </h2>
-        <DaySchedule userId={user.id} />
-      </section>
+        {/* Today's schedule */}
+        <div>
+          <p className="text-xs font-bold text-text-muted uppercase tracking-widest px-5 mb-3">
+            Scheda di oggi
+          </p>
+          <DaySchedule userId={user.id} />
+        </div>
 
-      {/* Quick start */}
-      <section>
-        <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide px-1 mb-2">
-          Avvio Rapido
-        </h2>
-        <Link href="/workout">
-          <Button fullWidth size="lg" variant="secondary">
-            + Sessione Libera
-          </Button>
-        </Link>
-      </section>
+        {/* Quick start */}
+        <div className="px-4">
+          <Link href="/workout">
+            <Button fullWidth size="lg" variant="secondary">
+              + Sessione libera
+            </Button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

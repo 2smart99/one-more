@@ -10,36 +10,40 @@
     box-sizing: border-box;
   }
 
-  html,
-  body {
+  html, body {
     height: 100%;
     overflow-x: hidden;
-    background-color: #F4F7FB;
-    color: #2D3748;
+    background-color: #F0F2F8;
+    color: #111827;
     font-family: 'Poppins', sans-serif;
-  }
-
-  /* Smooth momentum scroll on iOS */
-  .scroll-smooth-ios {
-    -webkit-overflow-scrolling: touch;
-    overflow-y: auto;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
 @layer components {
   .glass-panel {
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
   }
 
-  /* Hide scrollbar but keep scroll */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 60%, #1e40af 100%);
+  }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
   }
 }

@@ -7,17 +7,20 @@ interface CardProps {
   className?: string;
   glass?: boolean;
   onClick?: () => void;
+  accent?: boolean;
 }
 
-export function Card({ children, className = '', glass = false, onClick }: CardProps) {
+export function Card({ children, className = '', glass = false, onClick, accent = false }: CardProps) {
   const base = glass
-    ? 'bg-white/65 backdrop-blur-glass border border-white/40'
-    : 'bg-surface';
+    ? 'glass-panel'
+    : accent
+    ? 'bg-accent text-white'
+    : 'bg-surface border border-border';
 
   return (
     <div
       onClick={onClick}
-      className={`rounded-card shadow-soft p-6 ${base} ${onClick ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''} ${className}`}
+      className={`rounded-card shadow-card p-5 ${base} ${onClick ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''} ${className}`}
     >
       {children}
     </div>

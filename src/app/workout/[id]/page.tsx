@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useRef } from 'react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useWorkoutStore } from '@/store/workoutStore';
 import { useWorkoutActions } from '@/hooks/useWorkout';
@@ -10,9 +12,7 @@ import { AddExerciseSheet } from '@/components/workout/AddExerciseSheet';
 import { WorkoutSummary } from '@/components/workout/WorkoutSummary';
 import { Button } from '@/components/ui/Button';
 import { Workout } from '@/types';
-import { formatDuration, intervalToDuration } from 'date-fns';
-import { it } from 'date-fns/locale';
-import { useEffect, useRef } from 'react';
+import { intervalToDuration } from 'date-fns';
 
 export default function ActiveWorkoutPage() {
   const { user } = useTelegram();
@@ -21,16 +21,14 @@ export default function ActiveWorkoutPage() {
   const [showSheet, setShowSheet] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [summary, setSummary] = useState<{ workout: Workout; volume: number; best1RM: number; totalSets: number } | null>(null);
-  const [elapsed, setElapsed] = useState('00:00');
+  const [elapsed, setElapsed] = useState('00:00:00');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
       if (!startTime) return;
       const dur = intervalToDuration({ start: startTime, end: new Date() });
-      setElapsed(
-        `${String(dur.hours ?? 0).padStart(2, '0')}:${String(dur.minutes ?? 0).padStart(2, '0')}:${String(dur.seconds ?? 0).padStart(2, '0')}`
-      );
+      setElapsed(`${String(dur.hours ?? 0).padStart(2, '0')}:${String(dur.minutes ?? 0).padStart(2, '0')}:${String(dur.seconds ?? 0).padStart(2, '0')}`);
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [startTime]);
@@ -45,69 +43,51 @@ export default function ActiveWorkoutPage() {
     setFinishing(false);
   }
 
-  if (summary) {
-    return <WorkoutSummary {...summary} />;
-  }
-
+  if (summary) return <WorkoutSummary {...summary} />;
   if (!user?.id) return null;
 
   return (
     <div className="min-h-screen bg-background">
       {/* Sticky header */}
-      <div className="sticky top-0 z-30 glass-panel px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-30 bg-white border-b border-border px-5 py-3 flex items-center justify-between">
         <div>
-          <p className="text-xs text-text-secondary font-semibold">IN CORSO</p>
-          <p className="text-lg font-extrabold text-text-primary">{elapsed}</p>
+          <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">In corso</p>
+          <p className="text-lg font-extrabold text-text-primary tracking-tight">{elapsed}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-text-secondary">Volume</p>
+          <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Volume</p>
           <p className="text-lg font-extrabold text-accent">{volume.toLocaleString()} kg</p>
         </div>
       </div>
 
-      <div className="px-4 pt-3 pb-32 space-y-4">
+      <div className="px-4 pt-4 pb-36 space-y-3">
         {exercises.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-5xl mb-4">💪</p>
-            <p className="text-text-secondary text-sm">Aggiungi il primo esercizio per iniziare</p>
+            <div className="w-16 h-16 bg-accent-light rounded-full flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </div>
+            <p className="text-text-secondary text-sm font-medium">Aggiungi il primo esercizio</p>
           </div>
         )}
-
         {exercises.map((ae) => (
           <ExerciseCard key={ae.exercise.id} activeExercise={ae} userId={user.id} />
         ))}
-
-        <Button
-          fullWidth
-          size="lg"
-          variant="secondary"
-          onClick={() => setShowSheet(true)}
-        >
+        <Button fullWidth size="lg" variant="secondary" onClick={() => setShowSheet(true)}>
           + Aggiungi Esercizio
         </Button>
       </div>
 
-      {/* Floating finish button */}
+      {/* Floating finish */}
       <div className="fixed bottom-20 left-4 right-4 z-40">
-        <Button
-          fullWidth
-          size="lg"
-          variant="danger"
-          loading={finishing}
-          onClick={handleFinish}
-          className="shadow-soft-xl"
-        >
+        <Button fullWidth size="lg" variant="danger" loading={finishing} onClick={handleFinish} className="shadow-card-lg">
           Termina Allenamento
         </Button>
       </div>
 
-      {/* Rest timer overlay */}
       <RestTimer />
-
-      {/* Add exercise sheet */}
-      {showSheet && (
-        <AddExerciseSheet userId={user.id} onClose={() => setShowSheet(false)} />
-      )}
+      {showSheet && <AddExerciseSheet userId={user.id} onClose={() => setShowSheet(false)} />}
     </div>
   );
 }

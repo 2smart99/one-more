@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Card } from '@/components/ui/Card';
 import { startOfMonth, format } from 'date-fns';
 
 interface QuickStatsProps {
@@ -49,30 +48,25 @@ export function QuickStats({ userId }: QuickStatsProps) {
         0
       );
 
-      setStats({
-        monthVolume,
-        weekSessions: weekRes.count ?? 0,
-        totalSessions: totalRes.count ?? 0,
-      });
+      setStats({ monthVolume, weekSessions: weekRes.count ?? 0, totalSessions: totalRes.count ?? 0 });
       setLoading(false);
     }
     load();
   }, [userId]);
 
   const items = [
-    { label: 'Volume mese', value: loading ? '–' : `${(stats.monthVolume / 1000).toFixed(1)}t`, icon: '🏋️' },
-    { label: 'Sessioni 7gg', value: loading ? '–' : String(stats.weekSessions), icon: '🔥' },
-    { label: 'Totale sessioni', value: loading ? '–' : String(stats.totalSessions), icon: '🏆' },
+    { label: 'Volume mese', value: loading ? '—' : `${(stats.monthVolume / 1000).toFixed(1)}t`, unit: 'tonnellate' },
+    { label: 'Sessioni 7gg', value: loading ? '—' : String(stats.weekSessions), unit: 'allenamenti' },
+    { label: 'Totale', value: loading ? '—' : String(stats.totalSessions), unit: 'sessioni' },
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-3">
-      {items.map(({ label, value, icon }) => (
-        <Card key={label} className="p-4 text-center">
-          <div className="text-2xl mb-1">{icon}</div>
-          <div className="text-xl font-extrabold text-text-primary">{value}</div>
-          <div className="text-[10px] text-text-secondary font-medium leading-tight mt-0.5">{label}</div>
-        </Card>
+    <div className="grid grid-cols-3 gap-3 px-4">
+      {items.map(({ label, value }) => (
+        <div key={label} className="bg-surface rounded-card shadow-card p-4 text-center border border-border">
+          <div className="text-2xl font-extrabold text-text-primary tracking-tight">{value}</div>
+          <div className="text-[10px] text-text-muted font-semibold uppercase tracking-wider mt-1">{label}</div>
+        </div>
       ))}
     </div>
   );
