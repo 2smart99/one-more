@@ -48,7 +48,7 @@ export function DaySchedule({ userId }: DayScheduleProps) {
     );
   }
 
-  const exercises = routine.routine_exercises ?? [];
+  const exercises = (routine.routine_exercises ?? []).sort((a, b) => a.sort_order - b.sort_order);
   const muscleGroups = [...new Set(exercises.map((re) => re.exercise?.muscle_group).filter(Boolean))];
 
   return (
@@ -75,6 +75,24 @@ export function DaySchedule({ userId }: DayScheduleProps) {
               {m as string}
             </span>
           ))}
+        </div>
+      )}
+
+      {/* Exercise sequence preview */}
+      {exercises.length > 0 && (
+        <div className="px-5 pb-4 space-y-2">
+          <p className="text-[10px] font-bold text-t2 uppercase tracking-widest">Sequenza esercizi</p>
+          <div className="space-y-1.5">
+            {exercises.map((re, i) => (
+              <div key={re.id} className="flex items-center gap-3">
+                <span className="w-5 h-5 rounded-full bg-accent-light text-accent text-[10px] font-bold flex items-center justify-center shrink-0">
+                  {i + 1}
+                </span>
+                <span className="text-sm text-t1 font-medium truncate">{re.exercise?.name}</span>
+                <span className="text-[10px] text-t2 ml-auto shrink-0">{re.default_sets}x{re.default_reps}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

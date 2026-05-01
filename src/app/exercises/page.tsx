@@ -29,6 +29,14 @@ export default function ExercisesPage() {
   useEffect(() => {
     if (!user?.id) return;
     supabase
+      .from('users')
+      .upsert({ tg_id: user.id, first_name: user.first_name, username: user.username })
+      .then(() => {});
+  }, [user]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
       .from('exercises')
       .select('*')
       .or(`user_id.is.null,user_id.eq.${user.id}`)

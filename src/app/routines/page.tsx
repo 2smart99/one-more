@@ -24,6 +24,14 @@ export default function RoutinesPage() {
   useEffect(() => {
     if (!user?.id) return;
     supabase
+      .from('users')
+      .upsert({ tg_id: user.id, first_name: user.first_name, username: user.username })
+      .then(() => {});
+  }, [user]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
       .from('routines')
       .select('*, routine_exercises(count)')
       .eq('user_id', user.id)

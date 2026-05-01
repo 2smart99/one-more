@@ -70,6 +70,25 @@ export default function RoutineDetailPage() {
     );
   }
 
+  async function moveExercise(reId: string, direction: 'up' | 'down') {
+    const idx = routineExercises.findIndex((re) => re.id === reId);
+    if (idx === -1) return;
+    const newIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (newIdx < 0 || newIdx >= routineExercises.length) return;
+
+    const newList = [...routineExercises];
+    const temp = newList[idx];
+    newList[idx] = newList[newIdx];
+    newList[newIdx] = temp;
+
+    // Update sort_order for all
+    const updates = newList.map((re, i) => ({ id: re.id, sort_order: i }));
+    await Promise.all(updates.map((u) => supabase.from('routine_exercises').update({ sort_order: u.sort_order }).eq('id', u.id)));
+
+    setRoutineExercises(newList);
+    haptic('light');
+  }
+
   if (!routine) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg">
@@ -119,12 +138,28 @@ export default function RoutineDetailPage() {
                 <p className="font-extrabold text-t1 text-base">{re.exercise.name}</p>
                 <Badge label={re.exercise.muscle_group} color={MUSCLE_COLORS[re.exercise.muscle_group] ?? 'gray'} />
               </div>
-              <button
-                onClick={() => removeExercise(re.id)}
-                className="text-danger/40 hover:text-danger transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-danger/10"
-              >
-                x
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => moveExercise(re.id, 'up')}
+                  disabled={i === 0}
+                  className="text-t2 hover:text-t1 disabled:opacity-30 transition-colors w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-2"
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() => moveExercise(re.id, 'down')}
+                  disabled={i === routineExercises.length - 1}
+                  className="text-t2 hover:text-t1 disabled:opacity-30 transition-colors w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-2"
+                >
+                  ↓
+                </button>
+                <button
+                  onClick={() => removeExercise(re.id)}
+                  className="text-danger/40 hover:text-danger transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-danger/10"
+                >
+                  x
+                </button>
+              </div>
             </div>
 
             {/* Progress inputs */}
