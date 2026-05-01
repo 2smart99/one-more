@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Read(//c/Users/sebas/.claude/projects/c--Users-sebas-OneDrive-Desktop-PROGETTI-AI-TELEGRAM-FITNESS-TRACKER/memory/**)"
     ]
   }
 }
