@@ -10,6 +10,7 @@ import { Header } from '@/components/layout/Header';
 import { PRCard } from '@/components/history/PRCard';
 import { brzycki1RM, totalVolume } from '@/lib/telegram';
 import { format } from 'date-fns';
+import { it } from 'date-fns/locale';
 
 export default function HistoryPage() {
   const { user } = useTelegram();
@@ -31,7 +32,6 @@ export default function HistoryPage() {
 
       if (!sets) { setLoading(false); return; }
 
-      // Group by exercise
       const map = new Map<string, { name: string; byWorkout: Map<string, WorkoutSet[]> }>();
       for (const s of sets as (WorkoutSet & { workout: { start_time: string } })[]) {
         if (!s.exercise_id || !s.exercise) continue;
@@ -55,7 +55,7 @@ export default function HistoryPage() {
           const vol = totalVolume(wSets);
           const dayBest1RM = Math.max(0, ...wSets.map((s) => brzycki1RM(s.weight, s.reps)));
           volumeTrend.push({ date, volume: vol });
-          oneRMTrend.push({ date, volume: dayBest1RM }); // volume field reused for 1RM values
+          oneRMTrend.push({ date, volume: dayBest1RM });
           if (vol > bestVolume) bestVolume = vol;
           if (dayBest1RM > best1RM) best1RM = dayBest1RM;
           lastDate = date;
@@ -72,7 +72,6 @@ export default function HistoryPage() {
         });
       }
 
-      // Sort by most recently performed
       result.sort((a, b) => (b.last_performed ?? '') > (a.last_performed ?? '') ? 1 : -1);
       setHistories(result);
       setLoading(false);
@@ -82,17 +81,19 @@ export default function HistoryPage() {
   }, [user?.id]);
 
   return (
-    <div className="px-4 space-y-4">
+    <div className="px-4 space-y-4 pb-8">
       <Header title="Progressi" subtitle="Analisi e record personali" />
 
       {/* Tabs */}
-      <div className="flex bg-surface rounded-pill p-1 shadow-soft">
+      <div className="flex bg-surface-2 rounded-xl p-1 border border-border">
         {(['progress', 'log'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-2 text-sm font-semibold rounded-pill transition-all ${
-              activeTab === tab ? 'bg-accent text-white shadow-soft' : 'text-text-secondary'
+            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
+              activeTab === tab
+                ? 'bg-accent text-accent-fg'
+                : 'text-t2'
             }`}
           >
             {tab === 'progress' ? 'Per Esercizio' : 'Storico'}
@@ -103,14 +104,13 @@ export default function HistoryPage() {
       {loading && (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 bg-surface rounded-card animate-pulse" />
+            <div key={i} className="h-48 bg-surface-2 rounded-2xl animate-pulse border border-border" />
           ))}
         </div>
       )}
 
       {!loading && histories.length === 0 && (
-        <div className="text-center py-16 text-text-secondary">
-          <p className="text-4xl mb-3">📊</p>
+        <div className="text-center py-16 text-t2">
           <p>Completa il tuo primo allenamento<br />per vedere i progressi qui</p>
         </div>
       )}
@@ -155,7 +155,7 @@ function WorkoutLog({ userId }: { userId: number }) {
   }, [userId]);
 
   if (workouts.length === 0) {
-    return <p className="text-center text-text-secondary py-10">Nessun allenamento completato</p>;
+    return <p className="text-center text-t2 py-10">Nessun allenamento completato</p>;
   }
 
   return (
@@ -165,12 +165,21 @@ function WorkoutLog({ userId }: { userId: number }) {
         const end = new Date(w.end_time);
         const mins = Math.round((end.getTime() - start.getTime()) / 60000);
         return (
-          <div key={w.id} className="bg-surface rounded-2xl p-4 shadow-soft flex items-center justify-between">
+          <div
+            key={w.id}
+            className="bg-surface rounded-2xl border border-border p-4 flex items-center justify-between"
+          >
             <div>
-              <p className="font-bold text-text-primary">{format(start, 'EEE d MMM', { locale: undefined })}</p>
-              <p className="text-xs text-text-secondary">{format(start, 'HH:mm')} · {mins} min · {w.sets_count} serie</p>
+              <p className="font-bold text-t1">
+                {format(start, 'EEE d MMM', { locale: it }).replace(/^\w/, (c) => c.toUpperCase())}
+              </p>
+              <p className="text-xs text-t2">{format(start, 'HH:mm')} · {mins} min · {w.sets_count} serie</p>
             </div>
-            <span className="text-2xl">🏋️</span>
+            <div className="w-8 h-8 bg-accent-light rounded-xl flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
           </div>
         );
       })}

@@ -5,8 +5,14 @@ import { Exercise, MuscleGroup } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useWorkoutStore } from '@/store/workoutStore';
 import { haptic } from '@/lib/telegram';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 
 const MUSCLES: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core'];
+
+const MUSCLE_COLORS: Record<string, 'blue' | 'green' | 'orange' | 'red' | 'purple' | 'gray'> = {
+  Chest: 'blue', Back: 'green', Legs: 'orange', Shoulders: 'purple', Arms: 'red', Core: 'gray',
+};
 
 interface AddExerciseSheetProps {
   userId: number;
@@ -59,19 +65,24 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Sheet */}
-      <div className="absolute bottom-0 left-0 right-0 bg-background rounded-t-[32px] shadow-soft-xl flex flex-col max-h-[85vh]">
+      <div className="absolute bottom-0 left-0 right-0 bg-surface rounded-t-[28px] flex flex-col max-h-[85vh]">
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-gray-200" />
+          <div className="w-10 h-1 rounded-full bg-border" />
         </div>
 
         <div className="px-5 pb-3">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-extrabold text-text-primary">Aggiungi Esercizio</h2>
-            <button onClick={onClose} className="text-text-secondary text-lg">✕</button>
+            <h2 className="text-xl font-extrabold text-t1">Aggiungi Esercizio</h2>
+            <button
+              onClick={onClose}
+              className="text-t2 text-lg w-8 h-8 flex items-center justify-center hover:bg-surface-2 rounded-lg transition-colors"
+            >
+              x
+            </button>
           </div>
 
           {/* Search */}
@@ -80,7 +91,7 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
             placeholder="Cerca esercizio..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-surface rounded-xl px-4 py-2.5 text-sm text-text-primary shadow-soft outline-none focus:ring-2 focus:ring-accent/30 mb-3"
+            className="w-full bg-surface-2 border border-border rounded-xl px-4 py-2.5 text-sm text-t1 placeholder:text-t2 outline-none focus:ring-2 focus:ring-accent/30 mb-3"
           />
 
           {/* Muscle filter */}
@@ -89,10 +100,10 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
               <button
                 key={m}
                 onClick={() => setFilter(m)}
-                className={`shrink-0 rounded-pill px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                   filter === m
-                    ? 'bg-accent text-white shadow-soft'
-                    : 'bg-surface text-text-secondary shadow-soft'
+                    ? 'bg-accent text-accent-fg'
+                    : 'bg-surface-2 text-t2 border border-border'
                 }`}
               >
                 {m}
@@ -114,15 +125,15 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
                   haptic('medium');
                   onClose();
                 }}
-                className={`w-full flex items-center justify-between bg-surface rounded-2xl px-4 py-3 shadow-soft text-left transition-all active:scale-[0.98] ${
+                className={`w-full flex items-center justify-between bg-surface-2 border border-border rounded-2xl px-4 py-3 text-left transition-all active:scale-[0.98] ${
                   isActive ? 'opacity-40 cursor-default' : ''
                 }`}
               >
                 <div>
-                  <p className="font-semibold text-text-primary text-sm">{ex.name}</p>
-                  <p className="text-xs text-text-secondary">{ex.muscle_group}</p>
+                  <p className="font-semibold text-t1 text-sm">{ex.name}</p>
+                  <Badge label={ex.muscle_group} color={MUSCLE_COLORS[ex.muscle_group] ?? 'gray'} />
                 </div>
-                <span className="text-accent text-lg">{isActive ? '✓' : '+'}</span>
+                <span className="text-accent text-lg font-bold">{isActive ? 'v' : '+'}</span>
               </button>
             );
           })}
@@ -131,35 +142,53 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
           {!showAdd ? (
             <button
               onClick={() => setShowAdd(true)}
-              className="w-full bg-accent/10 text-accent rounded-2xl px-4 py-3 text-sm font-semibold border-2 border-dashed border-accent/30"
+              className="w-full bg-accent-light text-accent rounded-2xl px-4 py-3 text-sm font-semibold border-2 border-dashed border-accent/30"
             >
               + Crea esercizio custom
             </button>
           ) : (
-            <div className="bg-surface rounded-2xl p-4 shadow-soft space-y-3">
+            <div className="bg-surface-2 border border-border rounded-2xl p-4 space-y-4">
+              <h3 className="font-bold text-t1 text-sm">Nuovo esercizio</h3>
               <input
                 type="text"
                 placeholder="Nome esercizio"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full bg-background rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-accent/30"
+                autoFocus
+                className="w-full bg-surface border border-border rounded-xl px-3 py-2.5 text-sm text-t1 placeholder:text-t2 outline-none focus:ring-2 focus:ring-accent/30"
               />
-              <div className="flex flex-wrap gap-2">
-                {MUSCLES.map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => setNewMuscle(m)}
-                    className={`rounded-pill px-3 py-1 text-xs font-semibold transition-all ${
-                      newMuscle === m ? 'bg-accent text-white' : 'bg-background text-text-secondary'
-                    }`}
-                  >
-                    {m}
-                  </button>
-                ))}
+              <div>
+                <p className="text-[10px] text-t2 font-semibold uppercase tracking-wide mb-2">Categoria</p>
+                <div className="flex flex-wrap gap-2">
+                  {MUSCLES.map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setNewMuscle(m)}
+                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all border ${
+                        newMuscle === m
+                          ? 'bg-accent text-accent-fg border-accent'
+                          : 'bg-surface text-t2 border-border'
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setShowAdd(false)} className="flex-1 py-2 text-sm text-text-secondary rounded-xl bg-background">Annulla</button>
-                <button onClick={handleCreateCustom} className="flex-1 py-2 text-sm text-white rounded-xl bg-accent font-semibold">Crea</button>
+                <button
+                  onClick={() => setShowAdd(false)}
+                  className="flex-1 py-2.5 text-sm text-t2 rounded-xl bg-surface border border-border font-semibold"
+                >
+                  Annulla
+                </button>
+                <Button
+                  onClick={handleCreateCustom}
+                  disabled={!newName.trim()}
+                  className="flex-1"
+                >
+                  Crea
+                </Button>
               </div>
             </div>
           )}

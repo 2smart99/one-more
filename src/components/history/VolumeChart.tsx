@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  ResponsiveContainer, LineChart, Line, XAxis, YAxis,
-  CartesianGrid, Tooltip, Area, AreaChart,
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
+  CartesianGrid, Tooltip,
 } from 'recharts';
 import { VolumeDataPoint } from '@/types';
 import { format, parseISO } from 'date-fns';
@@ -15,10 +15,10 @@ interface VolumeChartProps {
   type?: 'volume' | 'one_rm';
 }
 
-export function VolumeChart({ data, title = 'Volume', color = '#78BCEE', type = 'volume' }: VolumeChartProps) {
+export function VolumeChart({ data, title = 'Volume', color = 'var(--accent)', type = 'volume' }: VolumeChartProps) {
   if (data.length === 0) {
     return (
-      <div className="h-32 flex items-center justify-center text-text-secondary text-sm">
+      <div className="h-32 flex items-center justify-center text-t2 text-sm">
         Nessun dato disponibile
       </div>
     );
@@ -32,29 +32,44 @@ export function VolumeChart({ data, title = 'Volume', color = '#78BCEE', type = 
 
   return (
     <div>
-      {title && <h4 className="text-sm font-semibold text-text-secondary mb-2">{title}</h4>}
+      {title && <h4 className="text-sm font-semibold text-t2 mb-2">{title}</h4>}
       <ResponsiveContainer width="100%" height={140}>
         <AreaChart data={formatted} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
           <defs>
-            <linearGradient id={`grad-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={`grad-area`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={color} stopOpacity={0.2} />
               <stop offset="95%" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-          <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#A0AEC0' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 10, fill: '#A0AEC0' }} axisLine={false} tickLine={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+          <XAxis
+            dataKey="label"
+            tick={{ fontSize: 10, fill: 'var(--text-2)' }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            tick={{ fontSize: 10, fill: 'var(--text-2)' }}
+            axisLine={false}
+            tickLine={false}
+          />
           <Tooltip
-            contentStyle={{ background: '#fff', border: 'none', borderRadius: 12, boxShadow: '0 8px 16px rgba(0,0,0,0.08)', fontSize: 12 }}
+            contentStyle={{
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: 12,
+              fontSize: 12,
+              color: 'var(--text-1)',
+            }}
             formatter={(val: number) => [type === 'volume' ? `${val}t` : `${val}kg`, title]}
-            labelStyle={{ fontWeight: 700, color: '#2D3748' }}
+            labelStyle={{ fontWeight: 700, color: 'var(--text-1)' }}
           />
           <Area
             type="monotone"
             dataKey="displayValue"
             stroke={color}
             strokeWidth={2.5}
-            fill={`url(#grad-${color.replace('#', '')})`}
+            fill="url(#grad-area)"
             dot={false}
             activeDot={{ r: 5, fill: color, strokeWidth: 0 }}
           />

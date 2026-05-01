@@ -4,46 +4,60 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ── */
+:root {
+  --bg: #F7F6FB;
+  --surface: #FFFFFF;
+  --surface-2: #F0EEF8;
+  --border: #E4E0F0;
+  --text-1: #0F0F1A;
+  --text-2: #6B6880;
+  --accent: #7C3AED;
+  --accent-light: #EDE9FE;
+  --accent-fg: #FFFFFF;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F97316;
+}
+
+.dark {
+  --bg: #0C0C16;
+  --surface: #14141F;
+  --surface-2: #1C1C2A;
+  --border: #252535;
+  --text-1: #F0EFFF;
+  --text-2: #8B8A9E;
+  --accent: #8B5CF6;
+  --accent-light: #1E1040;
+  --accent-fg: #FFFFFF;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F97316;
+}
+
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
     box-sizing: border-box;
   }
 
-  html, body {
+  html,
+  body {
     height: 100%;
     overflow-x: hidden;
-    background-color: #F0F2F8;
-    color: #111827;
+    background-color: var(--bg);
+    color: var(--text-1);
     font-family: 'Poppins', sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 }
 
 @layer components {
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-  }
-
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-  }
-
-  .hero-gradient {
-    background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 60%, #1e40af 100%);
-  }
-
-  .stat-number {
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.02em;
   }
 }

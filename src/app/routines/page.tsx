@@ -8,12 +8,11 @@ import { supabase } from '@/lib/supabase';
 import { Routine } from '@/types';
 import { Header } from '@/components/layout/Header';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { haptic } from '@/lib/telegram';
 
-const DAY_NAMES = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+const DAY_NAMES = ['Lunedi', 'Martedi', 'Mercoledi', 'Giovedi', 'Venerdi', 'Sabato', 'Domenica'];
 
 export default function RoutinesPage() {
   const { user } = useTelegram();
@@ -63,14 +62,14 @@ export default function RoutinesPage() {
   }
 
   return (
-    <div className="px-4 space-y-4">
+    <div className="px-4 space-y-4 pb-8">
       <Header
         title="Schede"
         subtitle="Gestisci le tue routine"
         right={
           <button
             onClick={() => setShowForm(!showForm)}
-            className="w-9 h-9 bg-accent text-white rounded-full flex items-center justify-center text-xl shadow-soft"
+            className="w-9 h-9 bg-accent text-accent-fg rounded-xl flex items-center justify-center text-xl font-bold"
           >
             +
           </button>
@@ -79,22 +78,24 @@ export default function RoutinesPage() {
 
       {showForm && (
         <Card>
-          <h3 className="font-bold text-text-primary mb-3">Nuova Scheda</h3>
+          <h3 className="font-bold text-t1 mb-3">Nuova Scheda</h3>
           <input
             type="text"
             placeholder="Nome scheda (es. Push Day)"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-background rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent/30 mb-3"
+            className="w-full bg-surface-2 border border-border rounded-xl px-4 py-2.5 text-sm text-t1 placeholder:text-t2 outline-none focus:ring-2 focus:ring-accent/30 mb-3"
           />
-          <p className="text-xs text-text-secondary mb-2 font-semibold">Giorno della settimana (opzionale)</p>
+          <p className="text-xs text-t2 mb-2 font-semibold">Giorno della settimana (opzionale)</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {DAY_NAMES.map((name, i) => (
               <button
                 key={i}
                 onClick={() => setDay(day === i ? null : i)}
-                className={`rounded-pill px-3 py-1 text-xs font-semibold transition-all ${
-                  day === i ? 'bg-accent text-white' : 'bg-background text-text-secondary shadow-soft'
+                className={`rounded-lg px-3 py-1 text-xs font-semibold transition-all border ${
+                  day === i
+                    ? 'bg-accent text-accent-fg border-accent'
+                    : 'bg-surface-2 text-t2 border-border'
                 }`}
               >
                 {name.slice(0, 3)}
@@ -103,15 +104,15 @@ export default function RoutinesPage() {
           </div>
           <div className="flex gap-2">
             <Button variant="secondary" size="sm" onClick={() => setShowForm(false)}>Annulla</Button>
-            <Button size="sm" onClick={createRoutine}>Crea</Button>
+            <Button size="sm" onClick={createRoutine} disabled={!title.trim()}>Crea</Button>
           </div>
         </Card>
       )}
 
       {routines.length === 0 && !showForm && (
-        <div className="text-center py-16 text-text-secondary">
-          <p className="text-4xl mb-3">🗓</p>
-          <p>Nessuna scheda ancora.<br />Crea la tua prima routine!</p>
+        <div className="bg-surface rounded-2xl border-2 border-dashed border-border p-10 text-center">
+          <p className="text-t1 font-bold mb-1">Nessuna scheda</p>
+          <p className="text-t2 text-sm">Crea la tua prima routine di allenamento</p>
         </div>
       )}
 
@@ -120,7 +121,7 @@ export default function RoutinesPage() {
         .sort(([a], [b]) => (a ?? 99) - (b ?? 99))
         .map(([dayIdx, rs]) => (
           <section key={String(dayIdx)}>
-            <h2 className="text-xs font-semibold text-text-secondary uppercase tracking-wide px-1 mb-2">
+            <h2 className="text-[11px] font-bold text-t2 uppercase tracking-widest px-1 mb-2">
               {dayIdx !== null ? DAY_NAMES[dayIdx] : 'Senza giorno fisso'}
             </h2>
             <div className="space-y-3">
@@ -128,19 +129,23 @@ export default function RoutinesPage() {
                 const exCount = (r as { routine_exercises?: { count: number }[] }).routine_exercises?.[0]?.count ?? 0;
                 return (
                   <Card key={r.id} className="flex items-center justify-between">
-                    <Link href={`/routines/${r.id}`} className="flex-1">
-                      <p className="font-extrabold text-text-primary">{r.title}</p>
-                      <Badge label={`${exCount} esercizi`} color="blue" />
+                    <Link href={`/routines/${r.id}`} className="flex-1 min-w-0 pr-3">
+                      <p className="font-extrabold text-t1 truncate">{r.title}</p>
+                      <p className="text-t2 text-xs mt-0.5">{exCount} esercizi</p>
                     </Link>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       <Link href={`/workout?routine=${r.id}`}>
-                        <button className="w-9 h-9 bg-accent text-white rounded-full flex items-center justify-center shadow-soft text-sm">▶</button>
+                        <button className="w-9 h-9 bg-accent text-accent-fg rounded-xl flex items-center justify-center text-sm">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3" />
+                          </svg>
+                        </button>
                       </Link>
                       <button
                         onClick={() => deleteRoutine(r.id)}
-                        className="w-9 h-9 text-danger/50 hover:text-danger rounded-full hover:bg-danger/10 flex items-center justify-center transition-all"
+                        className="w-9 h-9 text-danger/50 hover:text-danger rounded-xl hover:bg-danger/10 flex items-center justify-center transition-all"
                       >
-                        ✕
+                        x
                       </button>
                     </div>
                   </Card>

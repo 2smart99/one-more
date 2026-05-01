@@ -1,6 +1,6 @@
 'use client';
 
-type BadgeColor = 'blue' | 'green' | 'orange' | 'red' | 'purple' | 'gray';
+type BadgeColor = 'blue' | 'green' | 'orange' | 'red' | 'purple' | 'gray' | 'accent';
 
 interface BadgeProps {
   label: string;
@@ -8,17 +8,18 @@ interface BadgeProps {
 }
 
 const colors: Record<BadgeColor, string> = {
-  blue: 'bg-blue-50 text-blue-600',
-  green: 'bg-emerald-50 text-emerald-600',
-  orange: 'bg-orange-50 text-orange-600',
-  red: 'bg-red-50 text-red-600',
-  purple: 'bg-purple-50 text-purple-600',
-  gray: 'bg-gray-100 text-gray-500',
+  accent: 'bg-accent-light text-accent',
+  blue: 'bg-accent-light text-accent',
+  green: 'bg-success/10 text-success',
+  orange: 'bg-warning/10 text-warning',
+  red: 'bg-danger/10 text-danger',
+  purple: 'bg-accent-light text-accent',
+  gray: 'bg-surface-2 text-t2',
 };
 
 export function Badge({ label, color = 'gray' }: BadgeProps) {
   return (
-    <span className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-semibold tracking-wide ${colors[color]}`}>
+    <span className={`inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-semibold tracking-wide ${colors[color]}`}>
       {label}
     </span>
   );

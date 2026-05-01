@@ -28,7 +28,9 @@ export default function ActiveWorkoutPage() {
     timerRef.current = setInterval(() => {
       if (!startTime) return;
       const dur = intervalToDuration({ start: startTime, end: new Date() });
-      setElapsed(`${String(dur.hours ?? 0).padStart(2, '0')}:${String(dur.minutes ?? 0).padStart(2, '0')}:${String(dur.seconds ?? 0).padStart(2, '0')}`);
+      setElapsed(
+        `${String(dur.hours ?? 0).padStart(2, '0')}:${String(dur.minutes ?? 0).padStart(2, '0')}:${String(dur.seconds ?? 0).padStart(2, '0')}`
+      );
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [startTime]);
@@ -47,15 +49,15 @@ export default function ActiveWorkoutPage() {
   if (!user?.id) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-bg">
       {/* Sticky header */}
-      <div className="sticky top-0 z-30 bg-white border-b border-border px-5 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-30 bg-surface border-b border-border px-5 py-3 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">In corso</p>
-          <p className="text-lg font-extrabold text-text-primary tracking-tight">{elapsed}</p>
+          <p className="text-[10px] font-bold text-t2 uppercase tracking-widest">In corso</p>
+          <p className="text-lg font-extrabold text-t1 tracking-tight">{elapsed}</p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Volume</p>
+          <p className="text-[10px] font-bold text-t2 uppercase tracking-widest">Volume</p>
           <p className="text-lg font-extrabold text-accent">{volume.toLocaleString()} kg</p>
         </div>
       </div>
@@ -63,12 +65,12 @@ export default function ActiveWorkoutPage() {
       <div className="px-4 pt-4 pb-36 space-y-3">
         {exercises.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 bg-accent-light rounded-full flex items-center justify-center mb-4">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            <div className="w-16 h-16 bg-accent-light rounded-2xl flex items-center justify-center mb-4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
             </div>
-            <p className="text-text-secondary text-sm font-medium">Aggiungi il primo esercizio</p>
+            <p className="text-t2 text-sm font-medium">Aggiungi il primo esercizio</p>
           </div>
         )}
         {exercises.map((ae) => (
@@ -81,7 +83,14 @@ export default function ActiveWorkoutPage() {
 
       {/* Floating finish */}
       <div className="fixed bottom-20 left-4 right-4 z-40">
-        <Button fullWidth size="lg" variant="danger" loading={finishing} onClick={handleFinish} className="shadow-card-lg">
+        <Button
+          fullWidth
+          size="lg"
+          variant="danger"
+          loading={finishing}
+          onClick={handleFinish}
+          className="shadow-card-lg"
+        >
           Termina Allenamento
         </Button>
       </div>

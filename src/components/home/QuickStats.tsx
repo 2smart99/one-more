@@ -55,17 +55,17 @@ export function QuickStats({ userId }: QuickStatsProps) {
   }, [userId]);
 
   const items = [
-    { label: 'Volume mese', value: loading ? '—' : `${(stats.monthVolume / 1000).toFixed(1)}t`, unit: 'tonnellate' },
-    { label: 'Sessioni 7gg', value: loading ? '—' : String(stats.weekSessions), unit: 'allenamenti' },
-    { label: 'Totale', value: loading ? '—' : String(stats.totalSessions), unit: 'sessioni' },
+    { label: 'Volume mese', value: loading ? '-' : `${(stats.monthVolume / 1000).toFixed(1)}t` },
+    { label: 'Sessioni 7gg', value: loading ? '-' : String(stats.weekSessions) },
+    { label: 'Totale', value: loading ? '-' : String(stats.totalSessions) },
   ];
 
   return (
     <div className="grid grid-cols-3 gap-3 px-4">
       {items.map(({ label, value }) => (
-        <div key={label} className="bg-surface rounded-card shadow-card p-4 text-center border border-border">
-          <div className="text-2xl font-extrabold text-text-primary tracking-tight">{value}</div>
-          <div className="text-[10px] text-text-muted font-semibold uppercase tracking-wider mt-1">{label}</div>
+        <div key={label} className="bg-surface-2 rounded-2xl p-4 text-center">
+          <div className="text-2xl font-extrabold text-t1 tracking-tight">{value}</div>
+          <div className="text-[10px] text-t2 font-semibold uppercase tracking-wider mt-1">{label}</div>
         </div>
       ))}
     </div>

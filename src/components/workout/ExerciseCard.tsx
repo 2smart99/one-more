@@ -51,14 +51,14 @@ export function ExerciseCard({ activeExercise, userId }: ExerciseCardProps) {
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-lg font-extrabold text-text-primary">{exercise.name}</h3>
+          <h3 className="text-lg font-extrabold text-t1">{exercise.name}</h3>
           <div className="flex items-center gap-2 mt-1">
             <Badge label={exercise.muscle_group} color={MUSCLE_COLORS[exercise.muscle_group] ?? 'gray'} />
             {completedSets.length > 0 && (
               <>
-                <span className="text-xs text-text-secondary">Vol: <b className="text-text-primary">{volume}kg</b></span>
+                <span className="text-xs text-t2">Vol: <b className="text-t1">{volume}kg</b></span>
                 {best1RM > 0 && (
-                  <span className="text-xs text-text-secondary">1RM≈ <b className="text-text-primary">{best1RM}kg</b></span>
+                  <span className="text-xs text-t2">1RM: <b className="text-t1">{best1RM}kg</b></span>
                 )}
               </>
             )}
@@ -66,17 +66,17 @@ export function ExerciseCard({ activeExercise, userId }: ExerciseCardProps) {
         </div>
         <button
           onClick={() => removeExercise(exercise.id)}
-          className="text-text-secondary hover:text-danger transition-colors p-1"
+          className="text-t2 hover:text-danger transition-colors p-1"
         >
-          ✕
+          x
         </button>
       </div>
 
       {/* Column headers */}
       <div className="flex items-center gap-2 px-1 mb-1">
         <div className="w-8" />
-        <div className="flex-1 text-center text-[10px] font-semibold text-text-secondary uppercase tracking-wider">Peso</div>
-        <div className="flex-1 text-center text-[10px] font-semibold text-text-secondary uppercase tracking-wider">Reps</div>
+        <div className="flex-1 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Peso</div>
+        <div className="flex-1 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Reps</div>
         <div className="w-10" />
         <div className="w-8" />
       </div>
