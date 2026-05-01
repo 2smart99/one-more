@@ -16,7 +16,7 @@ export function useTelegram() {
       setUser(app.initDataUnsafe?.user ?? null);
     } else {
       // Dev fallback
-      setUser({ id: 0, first_name: 'Developer' });
+      setUser({ id: 999999, first_name: 'Developer' });
     }
   }, []);
 
