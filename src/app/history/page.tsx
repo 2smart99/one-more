@@ -42,14 +42,14 @@ export default function HistoryPage() {
       }
 
       const result: ExerciseHistory[] = [];
-      for (const [exId, data] of map.entries()) {
+      for (const [exId, data] of Array.from(map.entries())) {
         const volumeTrend = [];
         const oneRMTrend = [];
         let bestVolume = 0;
         let best1RM = 0;
         let lastDate: string | undefined;
 
-        for (const [date, wSets] of data.byWorkout.entries()) {
+        for (const [date, wSets] of Array.from(data.byWorkout.entries())) {
           const vol = totalVolume(wSets);
           const dayBest1RM = Math.max(0, ...wSets.map((s) => brzycki1RM(s.weight, s.reps)));
           volumeTrend.push({ date, volume: vol });
