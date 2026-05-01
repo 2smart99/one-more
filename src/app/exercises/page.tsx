@@ -46,12 +46,22 @@ export default function ExercisesPage() {
   }, [user?.id]);
 
   async function createCustom() {
-    if (!newName.trim() || !user?.id) return;
+    if (!newName.trim() || !user?.id) {
+      console.log('createCustom blocked:', { newName: newName.trim(), userId: user?.id });
+      return;
+    }
+
+    console.log('Creating exercise:', { name: newName.trim(), muscle: newMuscle, userId: user.id });
 
     // Ensure user exists first
-    await supabase
+    const { error: userError } = await supabase
       .from('users')
       .upsert({ tg_id: user.id, first_name: user.first_name, username: user.username });
+
+    if (userError) {
+      console.error('User upsert error:', userError);
+      return;
+    }
 
     const { data, error } = await supabase
       .from('exercises')
@@ -63,6 +73,8 @@ export default function ExercisesPage() {
       console.error('Error creating exercise:', error);
       return;
     }
+
+    console.log('Exercise created:', data);
 
     if (data) {
       setExercises((prev) => [...prev, data]);
