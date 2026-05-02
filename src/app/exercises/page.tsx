@@ -212,7 +212,7 @@ export default function ExercisesPage() {
               onClick={() => setFilter(m)}
               className={`chip shrink-0 ${filter === m ? 'chip-active' : ''}`}
             >
-              {m === 'All' ? 'Tutti' : m}
+              {m === 'All' ? 'Tutti' : MUSCLE_LABELS[m] ?? m}
             </button>
           ))}
         </div>
