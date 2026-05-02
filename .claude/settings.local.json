@@ -4,7 +4,8 @@
       "Bash(npm run *)",
       "Bash(npx next *)",
       "Bash(node_modules/.bin/next build *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(powershell -Command \"cd 'c:\\\\Users\\\\sebas\\\\OneDrive\\\\Desktop\\\\PROGETTI AI\\\\TELEGRAM FITNESS TRACKER'; npm run build 2>&1 | Select-Object -Last 30\")"
     ]
   }
 }

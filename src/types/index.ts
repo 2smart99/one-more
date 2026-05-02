@@ -2,7 +2,7 @@ export type MuscleGroup = 'Chest' | 'Back' | 'Legs' | 'Shoulders' | 'Arms' | 'Co
 
 export const MUSCLE_LABELS: Record<MuscleGroup, string> = {
   Chest: 'Petto',
-  Back: 'Dorso',
+  Back: 'Schiena',
   Legs: 'Gambe',
   Shoulders: 'Spalle',
   Arms: 'Braccia',
