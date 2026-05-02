@@ -23,12 +23,13 @@ function WorkoutStartContent() {
 
   useEffect(() => {
     if (!user?.id) return;
-    supabase
-      .from('routines')
-      .select('*, routine_exercises(count)')
-      .eq('user_id', user.id)
-      .order('day_of_week', { ascending: true, nullsFirst: false })
-      .then(({ data }) => setRoutines(data ?? []))
+    Promise.resolve(
+      supabase
+        .from('routines')
+        .select('*, routine_exercises(count)')
+        .eq('user_id', user.id)
+        .order('day_of_week', { ascending: true, nullsFirst: false })
+    ).then(({ data }) => setRoutines(data ?? []))
       .catch((err: unknown) => {
         console.error('[workout start] load error:', err);
         setRoutines([]);

@@ -58,9 +58,9 @@ export default function RoutineDetailPage() {
     if (!id || !user?.id) return;
     setLoadError(null);
     Promise.all([
-      supabase.from('routines').select('*').eq('id', id).single(),
-      supabase.from('routine_exercises').select('*, exercise:exercises(*)').eq('routine_id', id).order('sort_order'),
-      supabase.from('exercises').select('*').or(`user_id.is.null,user_id.eq.${user.id}`).order('name'),
+      Promise.resolve(supabase.from('routines').select('*').eq('id', id).single()),
+      Promise.resolve(supabase.from('routine_exercises').select('*, exercise:exercises(*)').eq('routine_id', id).order('sort_order')),
+      Promise.resolve(supabase.from('exercises').select('*').or(`user_id.is.null,user_id.eq.${user.id}`).order('name')),
     ]).then(([routineRes, reRes, exRes]) => {
       if (routineRes.error) {
         console.error('[routine load] routines:', routineRes.error);

@@ -52,13 +52,14 @@ export default function ExercisesPage() {
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
-    supabase
-      .from('exercises')
-      .select('*')
-      .or(`user_id.is.null,user_id.eq.${user.id}`)
-      .order('muscle_group')
-      .order('name')
-      .then(({ data, error }) => {
+    Promise.resolve(
+      supabase
+        .from('exercises')
+        .select('*')
+        .or(`user_id.is.null,user_id.eq.${user.id}`)
+        .order('muscle_group')
+        .order('name')
+    ).then(({ data, error }) => {
         if (error) console.error('[exercises load]', error);
         setExercises(data ?? []);
         setLoading(false);

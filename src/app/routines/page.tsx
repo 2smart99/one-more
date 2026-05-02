@@ -26,12 +26,13 @@ export default function RoutinesPage() {
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
-    supabase
-      .from('routines')
-      .select('*, routine_exercises(count)')
-      .eq('user_id', user.id)
-      .order('day_of_week', { ascending: true, nullsFirst: false })
-      .then(({ data, error }) => {
+    Promise.resolve(
+      supabase
+        .from('routines')
+        .select('*, routine_exercises(count)')
+        .eq('user_id', user.id)
+        .order('day_of_week', { ascending: true, nullsFirst: false })
+    ).then(({ data, error }) => {
         if (error) console.error('[routines load]', error);
         setRoutines(data ?? []);
         setLoading(false);
