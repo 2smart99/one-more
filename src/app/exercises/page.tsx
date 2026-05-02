@@ -56,6 +56,7 @@ export default function ExercisesPage() {
     supabase
       .from('exercises')
       .select('*')
+      .or(`(user_id.is.null,user_id.eq.${user.id})`)
       .order('muscle_group')
       .order('name')
       .then(({ data, error }) => {
