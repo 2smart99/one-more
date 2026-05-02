@@ -72,6 +72,10 @@ export default function RoutineDetailPage() {
       setRoutine(routineRes.data);
       setRoutineExercises((reRes.data ?? []) as RoutineExWithExercise[]);
       setAllExercises(exRes.data ?? []);
+    }).catch((err: unknown) => {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[routine load] unexpected error:', err);
+      setLoadError(`Errore caricamento scheda: ${msg}`);
     });
   }, [id, user?.id]);
 

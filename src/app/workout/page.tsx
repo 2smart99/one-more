@@ -28,7 +28,11 @@ function WorkoutStartContent() {
       .select('*, routine_exercises(count)')
       .eq('user_id', user.id)
       .order('day_of_week', { ascending: true, nullsFirst: false })
-      .then(({ data }) => setRoutines(data ?? []));
+      .then(({ data }) => setRoutines(data ?? []))
+      .catch((err: unknown) => {
+        console.error('[workout start] load error:', err);
+        setRoutines([]);
+      });
   }, [user?.id]);
 
   async function start(routineId?: string) {

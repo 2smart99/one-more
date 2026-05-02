@@ -22,7 +22,6 @@ export default function RoutinesPage() {
   const [day, setDay] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -33,13 +32,13 @@ export default function RoutinesPage() {
       .eq('user_id', user.id)
       .order('day_of_week', { ascending: true, nullsFirst: false })
       .then(({ data, error }) => {
-        if (error) {
-          console.error('[routines load]', error);
-          setLoadError('Errore caricamento: ' + error.message);
-        } else {
-          setRoutines(data ?? []);
-          setLoadError(null);
-        }
+        if (error) console.error('[routines load]', error);
+        setRoutines(data ?? []);
+        setLoading(false);
+      })
+      .catch((err: unknown) => {
+        console.error('[routines load] unexpected error:', err);
+        setRoutines([]);
         setLoading(false);
       });
   }, [user?.id]);

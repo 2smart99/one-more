@@ -43,16 +43,27 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
 
   async function handleCreateCustom() {
     if (!newName.trim()) return;
-    const { data } = await supabase
-      .from('exercises')
-      .insert({ user_id: userId, name: newName.trim(), muscle_group: newMuscle, is_custom: true })
-      .select()
-      .single();
-    if (data) {
-      setExercises((prev) => [...prev, data]);
-      setNewName('');
-      setShowAdd(false);
-      haptic('success');
+    try {
+      const formData = new FormData();
+      formData.append('user_id', String(userId));
+      formData.append('name', newName.trim());
+      formData.append('muscle_group', newMuscle);
+
+      const res = await fetch('/api/exercises', { method: 'POST', body: formData });
+      const json = await res.json();
+
+      if (!res.ok) {
+        console.error('[AddExerciseSheet] create error:', json);
+        return;
+      }
+      if (json.data) {
+        setExercises((prev) => [...prev, json.data]);
+        setNewName('');
+        setShowAdd(false);
+        haptic('success');
+      }
+    } catch (err) {
+      console.error('[AddExerciseSheet] network error:', err);
     }
   }
 

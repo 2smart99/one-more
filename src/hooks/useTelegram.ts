@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getTelegramWebApp, TelegramUser, TelegramWebApp } from '@/lib/telegram';
+import { supabase, setUserContext } from '@/lib/supabase';
 
 export function useTelegram() {
   const [twa, setTwa] = useState<TelegramWebApp | null>(null);
@@ -13,14 +14,22 @@ export function useTelegram() {
       app.ready();
       app.expand();
       setTwa(app);
-      setUser(app.initDataUnsafe?.user ?? null);
+      const tgUser = app.initDataUnsafe?.user ?? null;
+      setUser(tgUser);
+      // Set RLS context so row-level security policies can identify the user
+      if (tgUser) {
+        setUserContext(tgUser.id).catch((err) =>
+          console.error('[useTelegram] setUserContext failed:', err)
+        );
+      }
     } else {
       // Dev fallback — upsert so foreign keys don't fail
       const devUser = { id: 999999, first_name: 'Developer' };
-      import('@/lib/supabase').then(({ supabase }) => {
-        supabase.from('users').upsert({ tg_id: devUser.id, first_name: devUser.first_name }).then(() => {});
-      });
       setUser(devUser);
+      setUserContext(devUser.id).catch((err) =>
+        console.error('[useTelegram] setUserContext (dev) failed:', err)
+      );
+      supabase.from('users').upsert({ tg_id: devUser.id, first_name: devUser.first_name }).then(() => {});
     }
   }, []);
 

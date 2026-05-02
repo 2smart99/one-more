@@ -47,7 +47,6 @@ export default function ExercisesPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -56,17 +55,17 @@ export default function ExercisesPage() {
     supabase
       .from('exercises')
       .select('*')
-      .or(`(user_id.is.null,user_id.eq.${user.id})`)
+      .or(`user_id.is.null,user_id.eq.${user.id}`)
       .order('muscle_group')
       .order('name')
       .then(({ data, error }) => {
-        if (error) {
-          console.error('[exercises load]', error);
-          setLoadError('Errore caricamento: ' + error.message);
-        } else {
-          setExercises(data ?? []);
-          setLoadError(null);
-        }
+        if (error) console.error('[exercises load]', error);
+        setExercises(data ?? []);
+        setLoading(false);
+      })
+      .catch((err: unknown) => {
+        console.error('[exercises load] unexpected error:', err);
+        setExercises([]);
         setLoading(false);
       });
   }, [user?.id]);

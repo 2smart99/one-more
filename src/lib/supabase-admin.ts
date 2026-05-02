@@ -7,6 +7,13 @@ export function getAdminClient() {
 
   if (!url) throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL');
 
+  // Validate URL format
+  try {
+    new URL(url);
+  } catch {
+    throw new Error(`Invalid NEXT_PUBLIC_SUPABASE_URL: "${url}". Must be a valid URL.`);
+  }
+
   // Use service role key when available (bypasses RLS), otherwise fall back to
   // anon key — works after migration.sql has been run (permissive policies + GRANTs)
   const key = serviceKey || anonKey;
