@@ -178,17 +178,19 @@ export default function HistoryPage() {
 
 function WorkoutLog({ userId }: { userId: number }) {
   const [workouts, setWorkouts] = useState<{ id: string; start_time: string; end_time: string; sets_count: number }[]>([]);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     if (!userId) return;
-    supabase
-      .from('workouts')
-      .select('id, start_time, end_time, workout_sets(count)')
-      .eq('user_id', userId)
-      .not('end_time', 'is', null)
-      .order('start_time', { ascending: false })
-      .limit(30)
-      .then(({ data }) => {
+    Promise.resolve(
+      supabase
+        .from('workouts')
+        .select('id, start_time, end_time, workout_sets(count)')
+        .eq('user_id', userId)
+        .not('end_time', 'is', null)
+        .order('start_time', { ascending: false })
+        .limit(30)
+    ).then(({ data }) => {
         setWorkouts(
           (data ?? []).map((w: { id: string; start_time: string; end_time: string; workout_sets: { count: number }[] }) => ({
             id: w.id,
@@ -197,8 +199,31 @@ function WorkoutLog({ userId }: { userId: number }) {
             sets_count: w.workout_sets?.[0]?.count ?? 0,
           }))
         );
-      });
+      })
+      .catch((err: unknown) => console.error('[WorkoutLog] load error:', err));
   }, [userId]);
+
+  async function deleteWorkout(workoutId: string) {
+    if (!confirm('Eliminare questo allenamento? L\'azione è irreversibile.')) return;
+    setDeleting(workoutId);
+    try {
+      const res = await fetch(`/api/workouts/${workoutId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        console.error('[deleteWorkout]', json);
+        return;
+      }
+      setWorkouts((prev) => prev.filter((w) => w.id !== workoutId));
+    } catch (err) {
+      console.error('[deleteWorkout] network error:', err);
+    } finally {
+      setDeleting(null);
+    }
+  }
 
   if (workouts.length === 0) {
     return (
@@ -234,16 +259,33 @@ function WorkoutLog({ userId }: { userId: number }) {
                 {format(start, 'HH:mm')} · {mins} min · {w.sets_count} serie
               </p>
             </div>
-            <div
-              className="w-9 h-9 flex items-center justify-center"
-              style={{
-                background: 'rgba(200,241,53,0.12)',
-                borderRadius: 'var(--radius-sm)',
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-9 h-9 flex items-center justify-center"
+                style={{
+                  background: 'rgba(191,0,0,0.12)',
+                  borderRadius: 'var(--radius-sm)',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <button
+                onClick={() => deleteWorkout(w.id)}
+                disabled={deleting === w.id}
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-t2 hover:bg-danger/10 hover:text-danger transition-all text-sm font-bold disabled:opacity-30"
+                title="Elimina allenamento"
+              >
+                {deleting === w.id ? (
+                  <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
         );

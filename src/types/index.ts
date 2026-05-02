@@ -1,4 +1,13 @@
 export type MuscleGroup = 'Chest' | 'Back' | 'Legs' | 'Shoulders' | 'Arms' | 'Core';
+
+export const MUSCLE_LABELS: Record<MuscleGroup, string> = {
+  Chest: 'Petto',
+  Back: 'Dorso',
+  Legs: 'Gambe',
+  Shoulders: 'Spalle',
+  Arms: 'Braccia',
+  Core: 'Core',
+};
 export type SetType = 'Normal' | 'Warmup' | 'Drop' | 'Failure';
 export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 

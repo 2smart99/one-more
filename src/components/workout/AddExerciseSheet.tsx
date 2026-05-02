@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Exercise, MuscleGroup } from '@/types';
+import { Exercise, MuscleGroup, MUSCLE_LABELS } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { useWorkoutStore } from '@/store/workoutStore';
 import { haptic } from '@/lib/telegram';
@@ -90,9 +90,12 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
             <h2 className="text-xl font-extrabold text-t1">Aggiungi Esercizio</h2>
             <button
               onClick={onClose}
-              className="text-t2 text-lg w-8 h-8 flex items-center justify-center hover:bg-surface-2 rounded-lg transition-colors"
+              className="w-8 h-8 flex items-center justify-center hover:bg-surface-2 rounded-lg transition-colors text-t2"
+              title="Chiudi"
             >
-              x
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
           </div>
 
@@ -117,7 +120,7 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
                     : 'bg-surface-2 text-t2 border border-border'
                 }`}
               >
-                {m}
+                {m === 'All' ? 'Tutti' : MUSCLE_LABELS[m] ?? m}
               </button>
             ))}
           </div>
@@ -142,9 +145,15 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
               >
                 <div>
                   <p className="font-semibold text-t1 text-sm">{ex.name}</p>
-                  <Badge label={ex.muscle_group} color={MUSCLE_COLORS[ex.muscle_group] ?? 'gray'} />
+                  <Badge label={MUSCLE_LABELS[ex.muscle_group] ?? ex.muscle_group} color={MUSCLE_COLORS[ex.muscle_group] ?? 'gray'} />
                 </div>
-                <span className="text-accent text-lg font-bold">{isActive ? 'v' : '+'}</span>
+                {isActive ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <span className="text-accent text-lg font-bold">+</span>
+                )}
               </button>
             );
           })}
@@ -181,7 +190,7 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
                           : 'bg-surface text-t2 border-border'
                       }`}
                     >
-                      {m}
+                      {MUSCLE_LABELS[m] ?? m}
                     </button>
                   ))}
                 </div>

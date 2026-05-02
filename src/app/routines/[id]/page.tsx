@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
 import { supabase } from '@/lib/supabase';
-import { Exercise, MuscleGroup, Routine, RoutineExercise } from '@/types';
+import { Exercise, MuscleGroup, Routine, RoutineExercise, MUSCLE_LABELS } from '@/types';
 import { Header } from '@/components/layout/Header';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -319,7 +319,7 @@ export default function RoutineDetailPage() {
                       {re.exercise.description}
                     </p>
                   )}
-                  <Badge label={re.exercise.muscle_group} color={MUSCLE_COLORS[re.exercise.muscle_group] ?? 'gray'} />
+                  <Badge label={MUSCLE_LABELS[re.exercise.muscle_group] ?? re.exercise.muscle_group} color={MUSCLE_COLORS[re.exercise.muscle_group] ?? 'gray'} />
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => moveExercise(re.id, 'up')} disabled={i === 0}
@@ -428,7 +428,7 @@ export default function RoutineDetailPage() {
                     {(['All', ...MUSCLES] as const).map((m) => (
                       <button key={m} onClick={() => setFilterMuscle(m)}
                         className={`chip shrink-0 ${filterMuscle === m ? 'chip-active' : ''}`}>
-                        {m === 'All' ? 'Tutti' : m}
+                        {m === 'All' ? 'Tutti' : MUSCLE_LABELS[m] ?? m}
                       </button>
                     ))}
                   </div>

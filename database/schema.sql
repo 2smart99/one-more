@@ -71,43 +71,43 @@ CREATE INDEX IF NOT EXISTS idx_routines_day         ON routines(day_of_week);
 
 -- ─── Default Exercise Catalog ───────────────────────────────────────────────
 INSERT INTO exercises (name, muscle_group) VALUES
-  -- Chest
-  ('Bench Press', 'Chest'),
-  ('Incline Bench Press', 'Chest'),
-  ('Dumbbell Fly', 'Chest'),
-  ('Cable Crossover', 'Chest'),
-  ('Push-Up', 'Chest'),
+  -- Petto
+  ('Panca Piana', 'Chest'),
+  ('Panca Inclinata', 'Chest'),
+  ('Croci con Manubri', 'Chest'),
+  ('Crossover ai Cavi', 'Chest'),
+  ('Piegamenti (Push-Up)', 'Chest'),
   ('Dip', 'Chest'),
-  -- Back
-  ('Deadlift', 'Back'),
-  ('Pull-Up', 'Back'),
-  ('Barbell Row', 'Back'),
-  ('Lat Pulldown', 'Back'),
-  ('Seated Cable Row', 'Back'),
+  -- Dorso
+  ('Stacco da Terra', 'Back'),
+  ('Trazioni (Pull-Up)', 'Back'),
+  ('Rematore con Bilanciere', 'Back'),
+  ('Lat Machine', 'Back'),
+  ('Rematore Seduto', 'Back'),
   ('T-Bar Row', 'Back'),
   ('Face Pull', 'Back'),
-  -- Legs
+  -- Gambe
   ('Squat', 'Legs'),
   ('Leg Press', 'Legs'),
-  ('Romanian Deadlift', 'Legs'),
+  ('Stacco Rumeno', 'Legs'),
   ('Leg Extension', 'Legs'),
   ('Leg Curl', 'Legs'),
   ('Calf Raise', 'Legs'),
   ('Bulgarian Split Squat', 'Legs'),
-  -- Shoulders
-  ('Overhead Press', 'Shoulders'),
-  ('Lateral Raise', 'Shoulders'),
-  ('Front Raise', 'Shoulders'),
+  -- Spalle
+  ('Military Press', 'Shoulders'),
+  ('Alzate Laterali', 'Shoulders'),
+  ('Alzate Frontali', 'Shoulders'),
   ('Rear Delt Fly', 'Shoulders'),
   ('Arnold Press', 'Shoulders'),
-  -- Arms
-  ('Barbell Curl', 'Arms'),
+  -- Braccia
+  ('Curl con Bilanciere', 'Arms'),
   ('Hammer Curl', 'Arms'),
   ('Preacher Curl', 'Arms'),
-  ('Tricep Pushdown', 'Arms'),
+  ('Pushdown Tricipiti', 'Arms'),
   ('Skull Crusher', 'Arms'),
-  ('Overhead Tricep Extension', 'Arms'),
-  ('Close-Grip Bench Press', 'Arms'),
+  ('Estensione Tricipiti Sopra', 'Arms'),
+  ('Panca Stretta', 'Arms'),
   -- Core
   ('Plank', 'Core'),
   ('Crunch', 'Core'),

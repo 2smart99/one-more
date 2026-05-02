@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useRef, useState } from 'react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { supabase } from '@/lib/supabase';
-import { Exercise, MuscleGroup } from '@/types';
+import { Exercise, MuscleGroup, MUSCLE_LABELS } from '@/types';
 import { haptic } from '@/lib/telegram';
 import { useToast } from '@/hooks/useToast';
 
@@ -275,7 +275,7 @@ export default function ExercisesPage() {
                       </p>
                     ) : (
                       <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                        {ex.muscle_group}
+                        {MUSCLE_LABELS[ex.muscle_group] ?? ex.muscle_group}
                         {ex.is_custom && (
                           <span
                             className="ml-2 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded"

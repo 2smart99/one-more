@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ActiveExercise, SetType, WorkoutSet } from '@/types';
+import { ActiveExercise, SetType, WorkoutSet, MUSCLE_LABELS } from '@/types';
 import { useWorkoutStore } from '@/store/workoutStore';
 import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
@@ -53,7 +53,7 @@ export function ExerciseCard({ activeExercise, userId }: ExerciseCardProps) {
         <div>
           <h3 className="text-lg font-extrabold text-t1">{exercise.name}</h3>
           <div className="flex items-center gap-2 mt-1">
-            <Badge label={exercise.muscle_group} color={MUSCLE_COLORS[exercise.muscle_group] ?? 'gray'} />
+            <Badge label={MUSCLE_LABELS[exercise.muscle_group] ?? exercise.muscle_group} color={MUSCLE_COLORS[exercise.muscle_group] ?? 'gray'} />
             {completedSets.length > 0 && (
               <>
                 <span className="text-xs text-t2">Vol: <b className="text-t1">{volume}kg</b></span>
@@ -66,9 +66,12 @@ export function ExerciseCard({ activeExercise, userId }: ExerciseCardProps) {
         </div>
         <button
           onClick={() => removeExercise(exercise.id)}
-          className="text-t2 hover:text-danger transition-colors p-1"
+          title="Rimuovi esercizio"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-t2 hover:bg-danger/10 hover:text-danger transition-all"
         >
-          x
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
       </div>
 
@@ -76,7 +79,7 @@ export function ExerciseCard({ activeExercise, userId }: ExerciseCardProps) {
       <div className="flex items-center gap-2 px-1 mb-1">
         <div className="w-8" />
         <div className="flex-1 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Peso</div>
-        <div className="flex-1 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Reps</div>
+        <div className="flex-1 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Rip.</div>
         <div className="w-10" />
         <div className="w-8" />
       </div>
