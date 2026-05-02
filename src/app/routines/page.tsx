@@ -22,6 +22,7 @@ export default function RoutinesPage() {
   const [day, setDay] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
