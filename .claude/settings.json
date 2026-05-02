@@ -4,7 +4,12 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(git push *)",
-      "Read(//c/Users/sebas/.claude/projects/c--Users-sebas-OneDrive-Desktop-PROGETTI-AI-TELEGRAM-FITNESS-TRACKER/memory/**)"
+      "Read(//c/Users/sebas/.claude/projects/c--Users-sebas-OneDrive-Desktop-PROGETTI-AI-TELEGRAM-FITNESS-TRACKER/memory/**)",
+      "Bash(npx tsc *)",
+      "Bash(npx --yes next build)",
+      "Bash(node_modules\\\\.bin\\\\tsc --noEmit)",
+      "Bash(node node_modules/typescript/bin/tsc --noEmit)",
+      "Bash(git restore *)"
     ]
   }
 }

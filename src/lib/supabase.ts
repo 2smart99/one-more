@@ -2,7 +2,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 let _client: SupabaseClient | null = null;
 
-function getClient(): SupabaseClient {
+export function getClient(): SupabaseClient {
   if (!_client) {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -12,17 +12,15 @@ function getClient(): SupabaseClient {
       throw new Error('Supabase environment variables not configured. Check your .env file or Railway variables.');
     }
 
-    _client = createClient(url, key);
+    _client = createClient(url, key, {
+      auth: { persistSession: false },
+    });
   }
   return _client;
 }
 
-// Lazy proxy: the client is only created when first used (never at import time)
-export const supabase = new Proxy({} as SupabaseClient, {
-  get(_target, prop: string | symbol) {
-    return (getClient() as unknown as Record<string | symbol, unknown>)[prop];
-  },
-});
+// Export the client directly — no Proxy
+export const supabase = getClient();
 
 export async function setUserContext(tgId: number) {
   await getClient().rpc('set_config', {

@@ -32,8 +32,13 @@ export default function RoutinesPage() {
       .eq('user_id', user.id)
       .order('day_of_week', { ascending: true, nullsFirst: false })
       .then(({ data, error }) => {
-        if (error) console.error('[routines load]', error);
-        setRoutines(data ?? []);
+        if (error) {
+          console.error('[routines load]', error);
+          setLoadError('Errore caricamento: ' + error.message);
+        } else {
+          setRoutines(data ?? []);
+          setLoadError(null);
+        }
         setLoading(false);
       });
   }, [user?.id]);
