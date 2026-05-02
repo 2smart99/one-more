@@ -55,17 +55,55 @@ export function QuickStats({ userId }: QuickStatsProps) {
   }, [userId]);
 
   const items = [
-    { label: 'Volume mese', value: loading ? '-' : `${(stats.monthVolume / 1000).toFixed(1)}t` },
-    { label: 'Sessioni 7gg', value: loading ? '-' : String(stats.weekSessions) },
-    { label: 'Totale', value: loading ? '-' : String(stats.totalSessions) },
+    {
+      label: 'Volume mese',
+      value: loading ? '-' : `${(stats.monthVolume / 1000).toFixed(1)}t`,
+      icon: '🏋️',
+    },
+    {
+      label: 'Sessioni 7gg',
+      value: loading ? '-' : String(stats.weekSessions),
+      icon: '📅',
+    },
+    {
+      label: 'Totale',
+      value: loading ? '-' : String(stats.totalSessions),
+      icon: '🔥',
+    },
   ];
 
   return (
     <div className="grid grid-cols-3 gap-3 px-4">
-      {items.map(({ label, value }) => (
-        <div key={label} className="bg-surface-2 rounded-2xl p-4 text-center">
-          <div className="text-2xl font-extrabold text-t1 tracking-tight">{value}</div>
-          <div className="text-[10px] text-t2 font-semibold uppercase tracking-wider mt-1">{label}</div>
+      {items.map(({ label, value, icon }) => (
+        <div
+          key={label}
+          className="flex flex-col items-center justify-center text-center p-4"
+          style={{
+            background: 'var(--bg-secondary)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-card)',
+            minHeight: 90,
+          }}
+        >
+          <span className="text-lg mb-1">{icon}</span>
+          <div
+            className="font-stat font-extrabold leading-tight"
+            style={{ color: 'var(--text-primary)', fontSize: 22 }}
+          >
+            {loading ? (
+              <span
+                className="inline-block w-10 h-5 rounded animate-pulse"
+                style={{ background: 'var(--bg-tertiary)' }}
+              />
+            ) : value}
+          </div>
+          <div
+            className="text-[10px] font-semibold uppercase tracking-wider mt-1"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            {label}
+          </div>
         </div>
       ))}
     </div>

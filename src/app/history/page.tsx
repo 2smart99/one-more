@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useTelegram } from '@/hooks/useTelegram';
 import { supabase } from '@/lib/supabase';
 import { ExerciseHistory, WorkoutSet } from '@/types';
-import { Header } from '@/components/layout/Header';
 import { PRCard } from '@/components/history/PRCard';
 import { brzycki1RM, totalVolume } from '@/lib/telegram';
 import { format } from 'date-fns';
@@ -81,51 +80,98 @@ export default function HistoryPage() {
   }, [user?.id]);
 
   return (
-    <div className="px-4 space-y-4 pb-8">
-      <Header title="Progressi" subtitle="Analisi e record personali" />
+    <div className="min-h-screen pb-28" style={{ background: 'var(--bg-primary)' }}>
 
-      {/* Tabs */}
-      <div className="flex bg-surface-2 rounded-xl p-1 border border-border">
-        {(['progress', 'log'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
-              activeTab === tab
-                ? 'bg-accent text-accent-fg'
-                : 'text-t2'
-            }`}
-          >
-            {tab === 'progress' ? 'Per Esercizio' : 'Storico'}
-          </button>
-        ))}
+      {/* Header */}
+      <div className="px-5 pt-8 pb-5">
+        <h1 style={{ color: 'var(--text-primary)', fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px' }}>
+          Progressi
+        </h1>
+        <p className="text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+          Record personali e storico
+        </p>
       </div>
 
-      {loading && (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 bg-surface-2 rounded-2xl animate-pulse border border-border" />
+      <div className="px-4 space-y-4 pb-8">
+
+        {/* Tab switcher */}
+        <div
+          className="flex p-1"
+          style={{
+            background: 'var(--bg-secondary)',
+            borderRadius: 'var(--radius-pill)',
+            border: '1px solid var(--border)',
+          }}
+        >
+          {(['progress', 'log'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="flex-1 py-2.5 text-sm font-semibold transition-all"
+              style={{
+                borderRadius: 'var(--radius-pill)',
+                background: activeTab === tab ? 'var(--accent-primary)' : 'transparent',
+                color: activeTab === tab ? 'var(--text-on-accent)' : 'var(--text-secondary)',
+                boxShadow: activeTab === tab ? 'var(--shadow-accent)' : 'none',
+              }}
+            >
+              {tab === 'progress' ? 'Per Esercizio' : 'Storico'}
+            </button>
           ))}
         </div>
-      )}
 
-      {!loading && histories.length === 0 && (
-        <div className="text-center py-16 text-t2">
-          <p>Completa il tuo primo allenamento<br />per vedere i progressi qui</p>
-        </div>
-      )}
+        {/* Loading skeletons */}
+        {loading && (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="animate-pulse"
+                style={{
+                  height: 180,
+                  background: 'var(--bg-secondary)',
+                  borderRadius: 'var(--radius-lg)',
+                  border: '1px solid var(--border)',
+                }}
+              />
+            ))}
+          </div>
+        )}
 
-      {activeTab === 'progress' && !loading && (
-        <div className="space-y-4">
-          {histories.map((h) => (
-            <PRCard key={h.exercise_id} history={h} />
-          ))}
-        </div>
-      )}
+        {/* Empty state */}
+        {!loading && histories.length === 0 && (
+          <div
+            className="text-center py-16 px-6"
+            style={{
+              background: 'var(--bg-secondary)',
+              borderRadius: 'var(--radius-lg)',
+              border: '2px dashed var(--border)',
+            }}
+          >
+            <div className="text-4xl mb-4">📈</div>
+            <p className="font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+              Nessun dato ancora
+            </p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              Completa il tuo primo allenamento per vedere i progressi
+            </p>
+          </div>
+        )}
 
-      {activeTab === 'log' && !loading && (
-        <WorkoutLog userId={user?.id ?? 0} />
-      )}
+        {/* Per Esercizio */}
+        {activeTab === 'progress' && !loading && histories.length > 0 && (
+          <div className="space-y-4">
+            {histories.map((h) => (
+              <PRCard key={h.exercise_id} history={h} />
+            ))}
+          </div>
+        )}
+
+        {/* Storico */}
+        {activeTab === 'log' && !loading && (
+          <WorkoutLog userId={user?.id ?? 0} />
+        )}
+      </div>
     </div>
   );
 }
@@ -155,11 +201,15 @@ function WorkoutLog({ userId }: { userId: number }) {
   }, [userId]);
 
   if (workouts.length === 0) {
-    return <p className="text-center text-t2 py-10">Nessun allenamento completato</p>;
+    return (
+      <div className="text-center py-10" style={{ color: 'var(--text-secondary)' }}>
+        <p>Nessun allenamento completato</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {workouts.map((w) => {
         const start = new Date(w.start_time);
         const end = new Date(w.end_time);
@@ -167,16 +217,31 @@ function WorkoutLog({ userId }: { userId: number }) {
         return (
           <div
             key={w.id}
-            className="bg-surface rounded-2xl border border-border p-4 flex items-center justify-between"
+            className="flex items-center justify-between px-4 py-4"
+            style={{
+              background: 'var(--bg-secondary)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border)',
+              borderLeft: '3px solid var(--accent-primary)',
+              boxShadow: 'var(--shadow-card)',
+            }}
           >
             <div>
-              <p className="font-bold text-t1">
+              <p className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>
                 {format(start, 'EEE d MMM', { locale: it }).replace(/^\w/, (c) => c.toUpperCase())}
               </p>
-              <p className="text-xs text-t2">{format(start, 'HH:mm')} · {mins} min · {w.sets_count} serie</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                {format(start, 'HH:mm')} · {mins} min · {w.sets_count} serie
+              </p>
             </div>
-            <div className="w-8 h-8 bg-accent-light rounded-xl flex items-center justify-center">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <div
+              className="w-9 h-9 flex items-center justify-center"
+              style={{
+                background: 'rgba(200,241,53,0.12)',
+                borderRadius: 'var(--radius-sm)',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>

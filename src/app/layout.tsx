@@ -13,11 +13,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="it">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src="https://telegram.org/js/telegram-web-app.js" />
       </head>
-      <body className="bg-bg">
+      <body style={{ background: 'var(--bg-primary)' }}>
         <ThemeProvider>
-          <main className="pb-20 min-h-screen">
+          <main style={{ paddingBottom: 96, minHeight: '100vh' }}>
             {children}
           </main>
           <BottomNav />

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,33 +6,43 @@
 
 /* ── Design tokens ── */
 :root {
-  --bg: #F7F6FB;
-  --surface: #FFFFFF;
-  --surface-2: #F0EEF8;
-  --border: #E4E0F0;
-  --text-1: #0F0F1A;
-  --text-2: #6B6880;
-  --accent: #7C3AED;
-  --accent-light: #EDE9FE;
-  --accent-fg: #FFFFFF;
-  --success: #10B981;
-  --danger: #EF4444;
-  --warning: #F97316;
+  --bg-primary:    #F5F5F5;
+  --bg-secondary:  #FFFFFF;
+  --bg-tertiary:   #ECECEC;
+  --accent-primary:   #8BBF1A;
+  --accent-secondary: #6FA012;
+  --text-primary:  #111111;
+  --text-secondary:#555555;
+  --text-on-accent:#111111;
+  --border:        #DDDDDD;
+  --danger:        #D32F2F;
+  --success:       #4CAF50;
+
+  --radius-sm:   8px;
+  --radius-md:   16px;
+  --radius-lg:   24px;
+  --radius-xl:   32px;
+  --radius-pill: 100px;
+
+  --shadow-card:        0 4px 24px rgba(0,0,0,0.06);
+  --shadow-card-dark:   0 4px 24px rgba(0,0,0,0.15);
+  --shadow-accent:      0 4px 20px rgba(200,241,53,0.25);
 }
 
 .dark {
-  --bg: #0C0C16;
-  --surface: #14141F;
-  --surface-2: #1C1C2A;
-  --border: #252535;
-  --text-1: #F0EFFF;
-  --text-2: #8B8A9E;
-  --accent: #8B5CF6;
-  --accent-light: #1E1040;
-  --accent-fg: #FFFFFF;
-  --success: #10B981;
-  --danger: #EF4444;
-  --warning: #F97316;
+  --bg-primary:    #1A1A1A;
+  --bg-secondary:  #242424;
+  --bg-tertiary:   #2E2E2E;
+  --accent-primary:   #C8F135;
+  --accent-secondary: #A8E32A;
+  --text-primary:  #FFFFFF;
+  --text-secondary:#9E9E9E;
+  --text-on-accent:#111111;
+  --border:        #333333;
+  --danger:        #FF5252;
+  --success:       #C8F135;
+
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.15);
 }
 
 @layer base {
@@ -41,15 +51,19 @@
     box-sizing: border-box;
   }
 
-  html,
-  body {
+  html, body {
     height: 100%;
     overflow-x: hidden;
-    background-color: var(--bg);
-    color: var(--text-1);
-    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
+    font-size: 15px;
   }
+
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  h2 { font-size: 22px; font-weight: 700; }
+  h3 { font-size: 18px; font-weight: 600; }
 }
 
 @layer components {
@@ -57,17 +71,154 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  .font-stat {
+    font-family: 'Inter Tight', sans-serif;
+  }
+
+  /* Card base */
+  .card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-md {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Primary CTA — lime pill */
+  .btn-primary {
+    background: var(--accent-primary);
+    color: var(--text-on-accent);
+    border-radius: var(--radius-pill);
+    padding: 14px 28px;
+    font-weight: 700;
+    font-size: 15px;
+    transition: opacity 0.15s, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-primary:active  { transform: scale(0.97); opacity: 0.9; }
+  .btn-primary:disabled { opacity: 0.4; }
+
+  /* Secondary button */
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-secondary:active { transform: scale(0.97); }
+
+  /* Ghost button */
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent-primary);
+    border: 1.5px solid var(--accent-primary);
+    border-radius: var(--radius-pill);
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-ghost:active { transform: scale(0.97); }
+
+  /* Icon button */
+  .btn-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-icon:active { transform: scale(0.95); }
+
+  /* Chip / pill filter */
+  .chip {
+    border-radius: var(--radius-pill);
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .chip-active {
+    background: var(--accent-primary);
+    color: var(--text-on-accent);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-accent);
+  }
+
+  /* Input */
+  .input {
+    width: 100%;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 15px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input::placeholder { color: var(--text-secondary); opacity: 0.6; }
+  .input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(200,241,53,0.15);
+  }
+
+  /* Exercise card accent border (completato) */
+  .exercise-card-done {
+    border-left: 3px solid var(--accent-primary);
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
   }
 }
 
 @layer utilities {
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   @keyframes slide-down {
     from { opacity: 0; transform: translateY(-12px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  .animate-slide-down {
-    animation: slide-down 0.3s ease-out;
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
+  @keyframes sheet-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .animate-slide-up   { animation: slide-up 0.3s ease-out; }
+  .animate-slide-down { animation: slide-down 0.3s ease-out; }
+  .animate-fade-in    { animation: fade-in 0.2s ease-out; }
+  .animate-sheet-up   { animation: sheet-up 0.35s cubic-bezier(0.32,0.72,0,1); }
 }

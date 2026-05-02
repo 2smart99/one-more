@@ -14,11 +14,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-accent text-accent-fg hover:opacity-90 active:opacity-80',
-  secondary: 'bg-surface-2 text-t1 border border-border hover:opacity-80',
-  ghost: 'text-t2 hover:bg-surface-2',
-  danger: 'bg-danger/10 text-danger hover:bg-danger/20',
-  dark: 'bg-t1 text-bg hover:opacity-80',
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  ghost: 'btn-ghost',
+  danger: 'bg-danger/10 text-danger hover:bg-danger/20 rounded-pill border border-danger/20',
+  dark: 'bg-t1 text-bg rounded-pill border-0 hover:opacity-80',
 };
 
 const sizes: Record<Size, string> = {
@@ -37,14 +37,17 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
+  const isPredefined = variant === 'primary' || variant === 'secondary' || variant === 'ghost';
+
   return (
     <button
       {...props}
       disabled={disabled || loading}
       className={`
-        rounded-xl font-semibold transition-all duration-150 active:scale-[0.97]
+        font-semibold transition-all duration-150 active:scale-[0.97]
         disabled:opacity-50 disabled:cursor-not-allowed
-        ${variants[variant]} ${sizes[size]}
+        ${variants[variant]}
+        ${isPredefined ? '' : sizes[size]}
         ${fullWidth ? 'w-full' : ''}
         ${className}
       `}
