@@ -15,8 +15,12 @@ export function useTelegram() {
       setTwa(app);
       setUser(app.initDataUnsafe?.user ?? null);
     } else {
-      // Dev fallback
-      setUser({ id: 999999, first_name: 'Developer' });
+      // Dev fallback — upsert so foreign keys don't fail
+      const devUser = { id: 999999, first_name: 'Developer' };
+      import('@/lib/supabase').then(({ supabase }) => {
+        supabase.from('users').upsert({ tg_id: devUser.id, first_name: devUser.first_name }).then(() => {});
+      });
+      setUser(devUser);
     }
   }, []);
 
