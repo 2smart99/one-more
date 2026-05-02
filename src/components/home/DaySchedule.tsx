@@ -20,12 +20,13 @@ export function DaySchedule({ userId }: DayScheduleProps) {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('routines')
         .select('*, routine_exercises(*, exercise:exercises(*))')
         .eq('user_id', userId)
         .eq('day_of_week', todayIndex)
         .maybeSingle();
+      if (error) console.error('[DaySchedule load]', error);
       setRoutine(data);
       setLoading(false);
     }
@@ -90,7 +91,7 @@ export function DaySchedule({ userId }: DayScheduleProps) {
           <span
             className="inline-block text-[10px] font-bold uppercase tracking-wider rounded-lg px-2 py-0.5 mb-2"
             style={{
-              background: 'rgba(200,241,53,0.15)',
+              background: 'rgba(191,0,0,0.10)',
               color: 'var(--accent-primary)',
             }}
           >
@@ -113,7 +114,7 @@ export function DaySchedule({ userId }: DayScheduleProps) {
               key={m as string}
               className="text-xs font-semibold rounded-lg px-2 py-0.5"
               style={{
-                background: 'rgba(200,241,53,0.1)',
+                background: 'rgba(191,0,0,0.08)',
                 color: 'var(--accent-primary)',
               }}
             >
@@ -133,7 +134,7 @@ export function DaySchedule({ userId }: DayScheduleProps) {
                 <span
                   className="w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0"
                   style={{
-                    background: 'rgba(200,241,53,0.15)',
+                    background: 'rgba(191,0,0,0.10)',
                     color: 'var(--accent-primary)',
                   }}
                 >
@@ -157,9 +158,7 @@ export function DaySchedule({ userId }: DayScheduleProps) {
       {/* CTA */}
       <div className="px-5 pb-5">
         <Link href={`/workout?routine=${routine.id}`}>
-          <button className="btn-primary w-full">
-            ▶ Inizia Allenamento
-          </button>
+          <button className="btn-primary w-full">Inizia Allenamento</button>
         </Link>
       </div>
     </div>

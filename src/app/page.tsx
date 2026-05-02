@@ -89,7 +89,7 @@ export default function HomePage() {
               {todayCapitalized}
             </p>
             <h1 style={{ color: 'var(--text-primary)', fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1.15, marginTop: 2 }}>
-              Ciao, {user.first_name} 👋
+              Ciao, {user.first_name}
             </h1>
           </div>
           <ThemeToggle />

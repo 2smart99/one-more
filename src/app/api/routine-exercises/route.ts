@@ -5,15 +5,23 @@ import { getAdminClient } from '@/lib/supabase-admin';
 export async function POST(req: NextRequest) {
   try {
     const admin = getAdminClient();
-    const { routine_id, exercise_id, sort_order } = await req.json();
+    const body = await req.json();
+    const { routine_id, exercise_id, sort_order, default_sets, default_reps, default_weight } = body;
 
     if (!routine_id || !exercise_id) {
-      return NextResponse.json({ error: 'Campi obbligatori mancanti' }, { status: 400 });
+      return NextResponse.json({ error: 'routine_id e exercise_id obbligatori' }, { status: 400 });
     }
 
     const { data, error } = await admin
       .from('routine_exercises')
-      .insert({ routine_id, exercise_id, sort_order: sort_order ?? 0 })
+      .insert({
+        routine_id,
+        exercise_id,
+        sort_order: sort_order ?? 0,
+        default_sets: default_sets ?? 3,
+        default_reps: default_reps ?? 10,
+        default_weight: default_weight ?? 0,
+      })
       .select('*, exercise:exercises(*)')
       .single();
 

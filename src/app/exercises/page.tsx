@@ -11,9 +11,25 @@ import { useToast } from '@/hooks/useToast';
 
 const MUSCLES: MuscleGroup[] = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core'];
 
-const MUSCLE_EMOJI: Record<string, string> = {
-  Chest: '💪', Back: '🦾', Legs: '🦵', Shoulders: '🏋️', Arms: '💪', Core: '🔥',
-};
+function MuscleIcon({ group }: { group: string }) {
+  const cls = "w-5 h-5";
+  switch (group) {
+    case 'Chest':
+      return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6.5 6.5h11M6 12h12M6.5 17.5h11" /><circle cx="12" cy="12" r="9" /></svg>;
+    case 'Back':
+      return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M4 6l8 4 8-4M4 18l8-4 8 4" /></svg>;
+    case 'Legs':
+      return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3h8M10 3v10l-2 8M14 3v10l2 8" /></svg>;
+    case 'Shoulders':
+      return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h4l2-6h8l2 6h4" /><path d="M6 12v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4" /></svg>;
+    case 'Arms':
+      return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h12v4H6z" /><path d="M4 8h16v4H4z" /><path d="M6 12h12v4H6z" /></svg>;
+    case 'Core':
+      return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 3v18M3 12h18" /></svg>;
+    default:
+      return <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M8 12h8M12 8v8" /></svg>;
+  }
+}
 
 export default function ExercisesPage() {
   const { user } = useTelegram();
@@ -236,10 +252,10 @@ export default function ExercisesPage() {
                       />
                     ) : (
                       <div
-                        className="w-full h-full flex items-center justify-center text-base"
-                        style={{ background: 'rgba(191,0,0,0.1)' }}
+                        className="w-full h-full flex items-center justify-center"
+                        style={{ background: 'rgba(191,0,0,0.08)', color: 'var(--accent-primary)' }}
                       >
-                        {MUSCLE_EMOJI[ex.muscle_group] ?? '🏋️'}
+                        <MuscleIcon group={ex.muscle_group} />
                       </div>
                     )}
                   </div>
