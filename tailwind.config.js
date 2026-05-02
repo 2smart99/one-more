@@ -42,7 +42,7 @@ module.exports = {
       boxShadow: {
         card: '0 4px 24px rgba(0,0,0,0.15)',
         'card-light': '0 4px 24px rgba(0,0,0,0.06)',
-        accent: '0 4px 20px rgba(200,241,53,0.25)',
+        accent: '0 4px 20px rgba(191,0,0,0.30)',
       },
     },
   },

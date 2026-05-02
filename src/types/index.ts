@@ -15,6 +15,18 @@ export interface Exercise {
   name: string;
   muscle_group: MuscleGroup;
   is_custom: boolean;
+  description?: string;
+  photo_url?: string;
+}
+
+export interface ExerciseProgress {
+  id: string;
+  user_id: number;
+  exercise_id: string;
+  weight: number;
+  reps?: number;
+  sets?: number;
+  logged_at: string;
 }
 
 export interface Routine {

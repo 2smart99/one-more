@@ -25,18 +25,14 @@ export default function RoutinesPage() {
 
   useEffect(() => {
     if (!user?.id) return;
-    supabase.from('users').upsert({ tg_id: user.id, first_name: user.first_name, username: user.username }).then(() => {});
-  }, [user]);
-
-  useEffect(() => {
-    if (!user?.id) return;
     setLoading(true);
     supabase
       .from('routines')
       .select('*, routine_exercises(count)')
       .eq('user_id', user.id)
       .order('day_of_week', { ascending: true, nullsFirst: false })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) console.error('[routines load]', error);
         setRoutines(data ?? []);
         setLoading(false);
       });
@@ -49,24 +45,28 @@ export default function RoutinesPage() {
     }
     setCreating(true);
     try {
-      await supabase.from('users').upsert({ tg_id: user.id, first_name: user.first_name, username: user.username });
-      const { data, error } = await supabase
-        .from('routines')
-        .insert({ user_id: user.id, title: title.trim(), day_of_week: day })
-        .select()
-        .single();
-      if (error) throw error;
-      if (data) {
-        setRoutines((prev) => [...prev, data]);
-        setTitle('');
-        setDay(null);
-        setShowForm(false);
-        showToast('Scheda creata ✓', 'success');
-        haptic('success');
+      const res = await fetch('/api/routines', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, title: title.trim(), day_of_week: day }),
+      });
+      const json = await res.json();
+
+      if (!res.ok) {
+        console.error('[createRoutine] API error:', json);
+        throw new Error(json.error ?? 'Errore server');
       }
+
+      setRoutines((prev) => [...prev, json.data]);
+      setTitle('');
+      setDay(null);
+      setShowForm(false);
+      showToast('Scheda creata ✓', 'success');
+      haptic('success');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'riprova';
-      showToast('Errore: ' + message, 'error');
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[createRoutine] error:', err);
+      showToast('Errore: ' + msg, 'error');
       haptic('error');
     } finally {
       setCreating(false);
@@ -74,9 +74,25 @@ export default function RoutinesPage() {
   }
 
   async function deleteRoutine(id: string) {
-    await supabase.from('routines').delete().eq('id', id);
-    setRoutines((prev) => prev.filter((r) => r.id !== id));
-    haptic('light');
+    if (!user?.id) return;
+    try {
+      const res = await fetch(`/api/routines/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        console.error('[deleteRoutine] error:', json);
+        showToast('Errore eliminazione', 'error');
+        return;
+      }
+      setRoutines((prev) => prev.filter((r) => r.id !== id));
+      haptic('light');
+    } catch (err) {
+      console.error('[deleteRoutine] error:', err);
+      showToast('Errore eliminazione', 'error');
+    }
   }
 
   const byDay = new Map<number | null, Routine[]>();
@@ -106,10 +122,7 @@ export default function RoutinesPage() {
           style={{
             background: 'var(--accent-primary)',
             color: 'var(--text-on-accent)',
-            width: 44,
-            height: 44,
-            fontSize: 22,
-            fontWeight: 700,
+            width: 44, height: 44, fontSize: 22, fontWeight: 700,
             boxShadow: 'var(--shadow-accent)',
           }}
         >
@@ -141,6 +154,7 @@ export default function RoutinesPage() {
               onChange={(e) => setTitle(e.target.value)}
               disabled={creating}
               className="input disabled:opacity-50"
+              autoFocus
             />
 
             <div>
@@ -192,28 +206,18 @@ export default function RoutinesPage() {
               <div
                 key={i}
                 className="px-5 py-5 animate-pulse"
-                style={{
-                  background: 'var(--bg-secondary)',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--border)',
-                  height: 76,
-                }}
+                style={{ background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', height: 76 }}
               />
             ))}
           </div>
         ) : routines.length === 0 && !showForm ? (
-          /* Empty state */
           <div
             className="p-12 text-center"
-            style={{
-              background: 'var(--bg-secondary)',
-              borderRadius: 'var(--radius-lg)',
-              border: '2px dashed var(--border)',
-            }}
+            style={{ background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', border: '2px dashed var(--border)' }}
           >
             <div
               className="w-16 h-16 mx-auto mb-4 flex items-center justify-center"
-              style={{ background: 'rgba(200,241,53,0.1)', borderRadius: 'var(--radius-md)' }}
+              style={{ background: 'rgba(191,0,0,0.08)', borderRadius: 'var(--radius-md)' }}
             >
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="var(--accent-primary)" strokeWidth={1.5}>
                 <path d="M12 4.5v15m7.5-7.5h-15" />
@@ -225,7 +229,6 @@ export default function RoutinesPage() {
             </p>
           </div>
         ) : (
-          /* Grouped by day */
           Array.from(byDay.entries())
             .sort(([a], [b]) => (a ?? 99) - (b ?? 99))
             .map(([dayIdx, rs]) => (
@@ -247,7 +250,6 @@ export default function RoutinesPage() {
                           boxShadow: 'var(--shadow-card)',
                         }}
                       >
-                        {/* Left accent bar */}
                         <div style={{ width: 4, alignSelf: 'stretch', background: 'var(--accent-primary)', flexShrink: 0 }} />
 
                         <Link href={`/routines/${r.id}`} className="flex-1 min-w-0 px-4 py-4">
@@ -264,8 +266,7 @@ export default function RoutinesPage() {
                             <button
                               className="flex items-center justify-center"
                               style={{
-                                width: 40,
-                                height: 40,
+                                width: 40, height: 40,
                                 background: 'var(--accent-primary)',
                                 color: 'var(--text-on-accent)',
                                 borderRadius: 'var(--radius-md)',
@@ -280,14 +281,7 @@ export default function RoutinesPage() {
                           <button
                             onClick={() => deleteRoutine(r.id)}
                             className="flex items-center justify-center transition-all"
-                            style={{
-                              width: 40,
-                              height: 40,
-                              color: 'var(--danger)',
-                              opacity: 0.5,
-                              borderRadius: 'var(--radius-md)',
-                              fontSize: 20,
-                            }}
+                            style={{ width: 40, height: 40, color: 'var(--danger)', opacity: 0.5, borderRadius: 'var(--radius-md)', fontSize: 20 }}
                             onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
                             onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
                           >

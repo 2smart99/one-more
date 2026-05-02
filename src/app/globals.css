@@ -9,11 +9,11 @@
   --bg-primary:    #F5F5F5;
   --bg-secondary:  #FFFFFF;
   --bg-tertiary:   #ECECEC;
-  --accent-primary:   #8BBF1A;
-  --accent-secondary: #6FA012;
+  --accent-primary:   #BF0000;
+  --accent-secondary: #990000;
   --text-primary:  #111111;
   --text-secondary:#555555;
-  --text-on-accent:#111111;
+  --text-on-accent:#FFFFFF;
   --border:        #DDDDDD;
   --danger:        #D32F2F;
   --success:       #4CAF50;
@@ -26,21 +26,21 @@
 
   --shadow-card:        0 4px 24px rgba(0,0,0,0.06);
   --shadow-card-dark:   0 4px 24px rgba(0,0,0,0.15);
-  --shadow-accent:      0 4px 20px rgba(200,241,53,0.25);
+  --shadow-accent:      0 4px 20px rgba(191,0,0,0.30);
 }
 
 .dark {
   --bg-primary:    #1A1A1A;
   --bg-secondary:  #242424;
   --bg-tertiary:   #2E2E2E;
-  --accent-primary:   #C8F135;
-  --accent-secondary: #A8E32A;
+  --accent-primary:   #BF0000;
+  --accent-secondary: #990000;
   --text-primary:  #FFFFFF;
   --text-secondary:#9E9E9E;
-  --text-on-accent:#111111;
+  --text-on-accent:#FFFFFF;
   --border:        #333333;
   --danger:        #FF5252;
-  --success:       #C8F135;
+  --success:       #4CAF50;
 
   --shadow-card: 0 4px 24px rgba(0,0,0,0.15);
 }
@@ -181,7 +181,7 @@
   .input::placeholder { color: var(--text-secondary); opacity: 0.6; }
   .input:focus {
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(200,241,53,0.15);
+    box-shadow: 0 0 0 3px rgba(191,0,0,0.15);
   }
 
   /* Exercise card accent border (completato) */
