@@ -490,7 +490,7 @@ export default function RoutineDetailPage() {
                   <div className="flex flex-wrap gap-2">
                     {MUSCLES.map((m) => (
                       <button key={m} onClick={() => setNewExMuscle(m)} disabled={creatingEx}
-                        className={`chip disabled:opacity-50 ${newExMuscle === m ? 'chip-active' : ''}`}>{m}</button>
+                        className={`chip disabled:opacity-50 ${newExMuscle === m ? 'chip-active' : ''}`}>{MUSCLE_LABELS[m] ?? m}</button>
                     ))}
                   </div>
                 </div>
@@ -509,7 +509,7 @@ export default function RoutineDetailPage() {
                     </div>
                     <div className="text-center">
                       <p className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-secondary)' }}>Peso</p>
-                      <NumberInput value={newExWeight} onChange={setNewExWeight} step={2.5} suffix="kg" size="sm" />
+                      <NumberInput value={newExWeight} onChange={setNewExWeight} step={1} suffix="kg" size="sm" />
                     </div>
                   </div>
                 </div>
