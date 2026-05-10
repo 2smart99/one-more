@@ -61,7 +61,14 @@ export default function ExercisesPage() {
         .order('name')
     ).then(({ data, error }) => {
         if (error) console.error('[exercises load]', error);
-        setExercises(data ?? []);
+        const seen = new Set<string>();
+        const deduped = (data ?? []).filter((e) => {
+          const key = `${e.name}__${e.muscle_group}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        setExercises(deduped);
         setLoading(false);
       })
       .catch((err: unknown) => {

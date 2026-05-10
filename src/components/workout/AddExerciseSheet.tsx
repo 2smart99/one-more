@@ -36,7 +36,14 @@ export function AddExerciseSheet({ userId, onClose }: AddExerciseSheetProps) {
         .select('*')
         .or(`user_id.is.null,user_id.eq.${userId}`)
         .order('name');
-      setExercises(data ?? []);
+      const seen = new Set<string>();
+      const deduped = (data ?? []).filter((e) => {
+        const key = `${e.name}__${e.muscle_group}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setExercises(deduped);
     }
     load();
   }, [userId]);
