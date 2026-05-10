@@ -24,7 +24,7 @@ export function NumberInput({ value, onChange, step = 1, min = 0, max = 9999, su
       </button>
       <div className="flex items-baseline gap-0.5 min-w-[3rem] justify-center">
         <span className={`${textSize} font-bold text-t1 leading-none`}>
-          {value % 1 === 0 ? value : value.toFixed(1)}
+          {value % 1 === 0 ? value : (value % 0.5 === 0 ? value.toFixed(1) : value.toFixed(2))}
         </span>
         {suffix && <span className="text-xs text-t2 font-medium">{suffix}</span>}
       </div>

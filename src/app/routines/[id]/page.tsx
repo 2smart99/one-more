@@ -351,7 +351,7 @@ export default function RoutineDetailPage() {
                   </div>
                   <div className="text-center">
                     <p className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-secondary)' }}>Peso</p>
-                    <NumberInput value={re.default_weight} onChange={(v) => updateDefaults(re, 'default_weight', v)} step={2.5} suffix="kg" size="sm" />
+                    <NumberInput value={re.default_weight} onChange={(v) => updateDefaults(re, 'default_weight', v)} step={0.25} min={0} suffix="kg" size="sm" />
                   </div>
                 </div>
                 {re.default_weight > 0 && (
@@ -509,7 +509,7 @@ export default function RoutineDetailPage() {
                     </div>
                     <div className="text-center">
                       <p className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-secondary)' }}>Peso</p>
-                      <NumberInput value={newExWeight} onChange={setNewExWeight} step={1} suffix="kg" size="sm" />
+                      <NumberInput value={newExWeight} onChange={setNewExWeight} step={0.25} min={0} suffix="kg" size="sm" />
                     </div>
                   </div>
                 </div>

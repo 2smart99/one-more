@@ -53,7 +53,7 @@ export function SetRow({ set, prevSet, onUpdateWeight, onUpdateReps, onUpdateTyp
         {prevSet && (
           <p className="text-[9px] text-t2 text-center mb-0.5 font-medium">prec: {prevSet.weight}kg</p>
         )}
-        <NumberInput value={set.weight} onChange={onUpdateWeight} step={2.5} suffix="kg" size="sm" />
+        <NumberInput value={set.weight} onChange={onUpdateWeight} step={0.25} min={0} suffix="kg" size="sm" />
       </div>
 
       {/* Reps */}
