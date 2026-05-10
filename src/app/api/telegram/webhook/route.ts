@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL!;
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
 interface TelegramMessage {
   message_id: number;
@@ -14,7 +14,15 @@ interface TelegramUpdate {
   message?: TelegramMessage;
 }
 
+export async function GET() {
+  if (!BOT_TOKEN) return NextResponse.json({ error: 'TELEGRAM_BOT_TOKEN not set' }, { status: 500 });
+  const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getWebhookInfo`);
+  const data = await res.json();
+  return NextResponse.json(data);
+}
+
 async function sendMessage(chatId: number, text: string, replyMarkup?: object) {
+  if (!BOT_TOKEN) return;
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -28,6 +36,8 @@ async function sendMessage(chatId: number, text: string, replyMarkup?: object) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!BOT_TOKEN || !APP_URL) return NextResponse.json({ ok: true });
+
   const update: TelegramUpdate = await req.json();
 
   const message = update.message;
