@@ -1,6 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminClient } from '@/lib/supabase-admin';
 
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const admin = getAdminClient();
+    const { user_id, name, muscle_group } = await req.json();
+
+    const { data, error } = await admin
+      .from('exercises')
+      .update({ name, muscle_group })
+      .eq('id', params.id)
+      .eq('user_id', user_id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[exercises PATCH] error:', error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ data });
+  } catch (err) {
+    console.error('[exercises PATCH] unexpected error:', err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }

@@ -50,6 +50,12 @@ export default function RoutineDetailPage() {
   const [createError, setCreateError] = useState<string | null>(null);
   const newExFileRef = useRef<HTMLInputElement>(null);
 
+  // Edit exercise inline
+  const [editingExId, setEditingExId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editMuscle, setEditMuscle] = useState<MuscleGroup>('Chest');
+  const [savingEdit, setSavingEdit] = useState(false);
+
   // Progress debounce
   const progressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -71,7 +77,14 @@ export default function RoutineDetailPage() {
 
       setRoutine(routineRes.data);
       setRoutineExercises((reRes.data ?? []) as RoutineExWithExercise[]);
-      setAllExercises(exRes.data ?? []);
+      const seen = new Set<string>();
+      const deduped = (exRes.data ?? []).filter((e) => {
+        const key = `${e.name}__${e.muscle_group}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setAllExercises(deduped);
     }).catch((err: unknown) => {
       const msg = err instanceof Error ? err.message : String(err);
       console.error('[routine load] unexpected error:', err);
@@ -256,6 +269,40 @@ export default function RoutineDetailPage() {
     haptic('light');
   }
 
+  // ─── Edit exercise name/muscle ──────────────────────────────────────────────
+  function startEditExercise(re: RoutineExWithExercise) {
+    setEditingExId(re.exercise.id);
+    setEditName(re.exercise.name);
+    setEditMuscle(re.exercise.muscle_group as MuscleGroup);
+  }
+
+  async function saveEditExercise(exId: string) {
+    if (!editName.trim() || !user?.id) return;
+    setSavingEdit(true);
+    try {
+      const res = await fetch(`/api/exercises/${exId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, name: editName.trim(), muscle_group: editMuscle }),
+      });
+      const json = await res.json();
+      if (!res.ok) { console.error('[saveEditExercise]', json); return; }
+      setRoutineExercises((prev) =>
+        prev.map((re) =>
+          re.exercise.id === exId
+            ? { ...re, exercise: { ...re.exercise, name: editName.trim(), muscle_group: editMuscle } }
+            : re
+        )
+      );
+      setEditingExId(null);
+      haptic('success');
+    } catch (err) {
+      console.error('[saveEditExercise]', err);
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
   // ─── Render: loading ────────────────────────────────────────────────────────
   if (!routine && !loadError) {
     return (
@@ -310,31 +357,76 @@ export default function RoutineDetailPage() {
         <div className="space-y-3">
           {routineExercises.map((re, i) => (
             <Card key={re.id}>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-[10px] font-semibold mb-0.5" style={{ color: 'var(--text-secondary)' }}>#{i + 1}</p>
-                  <p className="font-extrabold text-base" style={{ color: 'var(--text-primary)' }}>{re.exercise.name}</p>
-                  {re.exercise.description && (
-                    <p className="text-xs mt-0.5 max-w-[200px] truncate" style={{ color: 'var(--text-secondary)' }}>
-                      {re.exercise.description}
-                    </p>
-                  )}
-                  <Badge label={MUSCLE_LABELS[re.exercise.muscle_group] ?? re.exercise.muscle_group} color={MUSCLE_COLORS[re.exercise.muscle_group] ?? 'gray'} />
+              {/* Edit inline form */}
+              {editingExId === re.exercise.id ? (
+                <div className="mb-4 space-y-3">
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    autoFocus
+                    disabled={savingEdit}
+                    className="input disabled:opacity-50 text-sm"
+                    placeholder="Nome esercizio"
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    {MUSCLES.map((m) => (
+                      <button key={m} onClick={() => setEditMuscle(m)} disabled={savingEdit}
+                        className={`chip text-xs disabled:opacity-50 ${editMuscle === m ? 'chip-active' : ''}`}>
+                        {MUSCLE_LABELS[m] ?? m}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditingExId(null)} disabled={savingEdit}
+                      className="flex-1 py-2 text-xs font-semibold rounded-xl disabled:opacity-50"
+                      style={{ background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
+                      Annulla
+                    </button>
+                    <button onClick={() => saveEditExercise(re.exercise.id)} disabled={!editName.trim() || savingEdit}
+                      className="flex-1 py-2 text-xs font-semibold rounded-xl disabled:opacity-50"
+                      style={{ background: 'var(--accent-primary)', color: 'var(--text-on-accent)' }}>
+                      {savingEdit ? 'Salvo...' : 'Salva'}
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => moveExercise(re.id, 'up')} disabled={i === 0}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg disabled:opacity-30"
-                    style={{ color: 'var(--text-secondary)' }}>↑</button>
-                  <button onClick={() => moveExercise(re.id, 'down')} disabled={i === routineExercises.length - 1}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg disabled:opacity-30"
-                    style={{ color: 'var(--text-secondary)' }}>↓</button>
-                  <button onClick={() => removeExercise(re.id)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg"
-                    style={{ color: 'var(--danger)', opacity: 0.5 }}
-                    onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}>×</button>
+              ) : (
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <p className="text-[10px] font-semibold mb-0.5" style={{ color: 'var(--text-secondary)' }}>#{i + 1}</p>
+                    <p className="font-extrabold text-base" style={{ color: 'var(--text-primary)' }}>{re.exercise.name}</p>
+                    {re.exercise.description && (
+                      <p className="text-xs mt-0.5 max-w-[200px] truncate" style={{ color: 'var(--text-secondary)' }}>
+                        {re.exercise.description}
+                      </p>
+                    )}
+                    <Badge label={MUSCLE_LABELS[re.exercise.muscle_group] ?? re.exercise.muscle_group} color={MUSCLE_COLORS[re.exercise.muscle_group] ?? 'gray'} />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {re.exercise.is_custom && (
+                      <button onClick={() => startEditExercise(re)}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg"
+                        style={{ color: 'var(--text-secondary)' }} title="Modifica">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                      </button>
+                    )}
+                    <button onClick={() => moveExercise(re.id, 'up')} disabled={i === 0}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg disabled:opacity-30"
+                      style={{ color: 'var(--text-secondary)' }}>↑</button>
+                    <button onClick={() => moveExercise(re.id, 'down')} disabled={i === routineExercises.length - 1}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg disabled:opacity-30"
+                      style={{ color: 'var(--text-secondary)' }}>↓</button>
+                    <button onClick={() => removeExercise(re.id)}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg"
+                      style={{ color: 'var(--danger)', opacity: 0.5 }}
+                      onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+                      onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}>×</button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="space-y-3">
                 <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
@@ -443,7 +535,7 @@ export default function RoutineDetailPage() {
                         {ex.description && (
                           <p className="text-xs truncate max-w-[220px]" style={{ color: 'var(--text-secondary)' }}>{ex.description}</p>
                         )}
-                        <Badge label={ex.muscle_group} color={MUSCLE_COLORS[ex.muscle_group] ?? 'gray'} />
+                        <Badge label={MUSCLE_LABELS[ex.muscle_group] ?? ex.muscle_group} color={MUSCLE_COLORS[ex.muscle_group] ?? 'gray'} />
                       </div>
                       <span className="text-lg font-bold" style={{ color: 'var(--accent-primary)' }}>+</span>
                     </button>
