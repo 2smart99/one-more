@@ -76,12 +76,11 @@ export function ExerciseCard({ activeExercise, userId }: ExerciseCardProps) {
       </div>
 
       {/* Column headers */}
-      <div className="flex items-center gap-2 px-1 mb-1">
-        <div className="w-8" />
-        <div className="flex-1 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Peso</div>
-        <div className="flex-1 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Rip.</div>
-        <div className="w-10" />
-        <div className="w-8" />
+      <div className="flex items-center gap-1.5 px-1 mb-1">
+        <div className="w-8 shrink-0" />
+        <div className="w-[108px] shrink-0 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Peso</div>
+        <div className="w-[100px] shrink-0 text-center text-[10px] font-semibold text-t2 uppercase tracking-wider">Rip.</div>
+        <div className="w-9 shrink-0 ml-auto" />
       </div>
 
       {/* Sets */}

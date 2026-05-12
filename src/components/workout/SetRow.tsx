@@ -33,14 +33,14 @@ export function SetRow({ set, prevSet, onUpdateWeight, onUpdateReps, onUpdateTyp
   }
 
   return (
-    <div className={`flex items-center gap-2 py-2 px-2 rounded-xl transition-colors ${set.completed ? 'bg-success/10' : ''}`}>
+    <div className={`flex items-center gap-1.5 py-2 px-1 rounded-xl transition-colors ${set.completed ? 'bg-success/10' : ''}`}>
       {/* Set number + type badge */}
-      <div className="flex flex-col items-center gap-1 w-9 shrink-0">
+      <div className="flex flex-col items-center gap-1 w-8 shrink-0">
         <span className="text-[11px] font-bold text-t2">{set.set_number}</span>
         <button
           onClick={cycleType}
           title={`${typeInfo.tooltip} — tocca per cambiare tipo`}
-          className={`w-8 h-7 rounded-lg text-[10px] font-bold flex items-center justify-center transition-all ${
+          className={`w-7 h-6 rounded-md text-[9px] font-bold flex items-center justify-center transition-all ${
             set.set_type === 'Normal' ? typeInfo.inactive : typeInfo.active
           }`}
         >
@@ -49,7 +49,7 @@ export function SetRow({ set, prevSet, onUpdateWeight, onUpdateReps, onUpdateTyp
       </div>
 
       {/* Weight */}
-      <div className="flex-1">
+      <div className="w-[108px] shrink-0">
         {prevSet && (
           <p className="text-[9px] text-t2 text-center mb-0.5 font-medium">prec: {prevSet.weight}kg</p>
         )}
@@ -57,7 +57,7 @@ export function SetRow({ set, prevSet, onUpdateWeight, onUpdateReps, onUpdateTyp
       </div>
 
       {/* Reps */}
-      <div className="flex-1">
+      <div className="w-[100px] shrink-0">
         {prevSet && (
           <p className="text-[9px] text-t2 text-center mb-0.5 font-medium">prec: {prevSet.reps}rep</p>
         )}
@@ -68,13 +68,13 @@ export function SetRow({ set, prevSet, onUpdateWeight, onUpdateReps, onUpdateTyp
       <button
         onClick={() => { onComplete(); haptic('medium'); }}
         title="Segna serie completata"
-        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-90 shrink-0 border ${
+        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 shrink-0 border ml-auto ${
           set.completed
             ? 'bg-success text-white border-success'
             : 'bg-surface-2 border-border text-t2'
         }`}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </button>
