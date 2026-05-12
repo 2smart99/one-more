@@ -20,10 +20,10 @@ interface SetRowProps {
   onUpdateReps: (val: number) => void;
   onUpdateType: (val: SetType) => void;
   onComplete: () => void;
-  onRemove: () => void;
+  onRemove?: () => void;
 }
 
-export function SetRow({ set, prevSet, onUpdateWeight, onUpdateReps, onUpdateType, onComplete, onRemove }: SetRowProps) {
+export function SetRow({ set, prevSet, onUpdateWeight, onUpdateReps, onUpdateType, onComplete }: SetRowProps) {
   const typeInfo = SET_TYPES.find((t) => t.value === set.set_type) ?? SET_TYPES[0];
 
   function cycleType() {
@@ -79,16 +79,6 @@ export function SetRow({ set, prevSet, onUpdateWeight, onUpdateReps, onUpdateTyp
         </svg>
       </button>
 
-      {/* Remove */}
-      <button
-        onClick={() => { onRemove(); haptic('light'); }}
-        title="Rimuovi serie"
-        className="w-8 h-8 rounded-lg flex items-center justify-center text-t2 hover:bg-danger/10 hover:text-danger transition-all shrink-0"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { RestTimer } from '@/components/workout/RestTimer';
 import { AddExerciseSheet } from '@/components/workout/AddExerciseSheet';
 import { WorkoutSummary } from '@/components/workout/WorkoutSummary';
 import { Button } from '@/components/ui/Button';
-import { Workout } from '@/types';
+import type { Workout } from '@/types';
 import { intervalToDuration } from 'date-fns';
 
 function ActiveWorkoutContent() {
@@ -77,16 +77,33 @@ function ActiveWorkoutContent() {
           </svg>
         </button>
 
-        <div className="flex-1 flex items-center justify-between">
+        <div className="flex-1 flex items-center justify-between gap-2">
           <div>
             <p className="text-[10px] font-bold text-t2 uppercase tracking-widest">In corso</p>
             <p className="text-lg font-extrabold text-t1 tracking-tight">{elapsed}</p>
           </div>
-          <div className="text-right">
+          <div className="text-right shrink-0">
             <p className="text-[10px] font-bold text-t2 uppercase tracking-widest">Volume</p>
             <p className="text-lg font-extrabold text-accent">{volume.toLocaleString()} kg</p>
           </div>
         </div>
+
+        {/* Termina nell'header */}
+        <button
+          onClick={handleFinish}
+          disabled={finishing}
+          className="shrink-0 h-9 px-3 rounded-xl bg-danger text-white text-xs font-bold active:scale-90 transition-all disabled:opacity-50 flex items-center gap-1.5"
+          title="Termina allenamento"
+        >
+          {finishing ? (
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="4" y="4" width="16" height="16" rx="2" />
+            </svg>
+          )}
+          Stop
+        </button>
       </div>
 
       {/* Legenda tipi serie */}
@@ -106,7 +123,7 @@ function ActiveWorkoutContent() {
       </div>
 
       {/* Esercizi */}
-      <div className="px-4 pt-3 pb-48 space-y-3">
+      <div className="px-4 pt-3 pb-28 space-y-3">
         {exercises.length === 0 && isFromRoutine && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin mb-4" />
@@ -139,22 +156,6 @@ function ActiveWorkoutContent() {
             + Aggiungi Esercizio
           </Button>
         )}
-      </div>
-
-      {/* Floating: Termina */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-[96px] pt-3 bg-gradient-to-t from-bg/95 to-bg/0 pointer-events-none">
-        <div className="pointer-events-auto">
-          <Button
-            fullWidth
-            size="lg"
-            variant="danger"
-            loading={finishing}
-            onClick={handleFinish}
-            className="shadow-card-lg"
-          >
-            Termina Allenamento
-          </Button>
-        </div>
       </div>
 
       <RestTimer />
