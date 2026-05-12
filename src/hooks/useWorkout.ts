@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { totalVolume, brzycki1RM } from '@/lib/telegram';
 import { useWorkoutStore } from '@/store/workoutStore';
-import { Workout, WorkoutSet } from '@/types';
+import { Workout, WorkoutSet, Exercise } from '@/types';
 
 export function useWorkoutActions(userId: number) {
   const store = useWorkoutStore();
@@ -19,6 +19,27 @@ export function useWorkoutActions(userId: number) {
     store.startWorkout(data.id);
     return data.id;
   }, [userId, store]);
+
+  const loadRoutineExercises = useCallback(async (routineId: string) => {
+    const { data, error } = await supabase
+      .from('routine_exercises')
+      .select('*, exercise:exercises(*)')
+      .eq('routine_id', routineId)
+      .order('sort_order', { ascending: true });
+
+    if (error || !data) return;
+
+    const items = data
+      .filter((re) => re.exercise)
+      .map((re) => ({
+        exercise: re.exercise as Exercise,
+        sets: re.default_sets ?? 3,
+        reps: re.default_reps ?? 10,
+        weight: re.default_weight ?? 0,
+      }));
+
+    store.loadExercisesFromRoutine(items);
+  }, [store]);
 
   const finishWorkout = useCallback(async (): Promise<Workout | null> => {
     if (!store.workoutId) return null;
@@ -63,5 +84,5 @@ export function useWorkoutActions(userId: number) {
       .map((s) => brzycki1RM(s.weight, s.reps))
   );
 
-  return { createWorkout, finishWorkout, volume, best1RM };
+  return { createWorkout, finishWorkout, loadRoutineExercises, volume, best1RM };
 }

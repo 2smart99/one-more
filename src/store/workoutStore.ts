@@ -12,6 +12,7 @@ interface WorkoutState {
   startWorkout: (workoutId: string) => void;
   endWorkout: () => void;
   addExercise: (exercise: Exercise) => void;
+  loadExercisesFromRoutine: (items: Array<{ exercise: Exercise; sets: number; reps: number; weight: number }>) => void;
   removeExercise: (exerciseId: string) => void;
   addSet: (exerciseId: string) => void;
   removeSet: (exerciseId: string, setId: string) => void;
@@ -55,6 +56,19 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
         ...state.exercises,
         { exercise, sets: [makeSet(1)] },
       ],
+    })),
+
+  loadExercisesFromRoutine: (items) =>
+    set(() => ({
+      exercises: items.map(({ exercise, sets, reps, weight }) => ({
+        exercise,
+        sets: Array.from({ length: sets }, (_, i) => ({
+          ...makeSet(i + 1),
+          reps,
+          weight,
+          exercise_id: exercise.id,
+        })),
+      })),
     })),
 
   removeExercise: (exerciseId) =>

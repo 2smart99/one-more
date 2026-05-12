@@ -2,8 +2,8 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTelegram } from '@/hooks/useTelegram';
 import { useWorkoutStore } from '@/store/workoutStore';
 import { useWorkoutActions } from '@/hooks/useWorkout';
@@ -15,16 +15,27 @@ import { Button } from '@/components/ui/Button';
 import { Workout } from '@/types';
 import { intervalToDuration } from 'date-fns';
 
-export default function ActiveWorkoutPage() {
+function ActiveWorkoutContent() {
   const { user } = useTelegram();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const routineId = searchParams.get('routine');
+
   const { exercises, startTime } = useWorkoutStore();
-  const { finishWorkout, volume, best1RM } = useWorkoutActions(user?.id ?? 0);
+  const { finishWorkout, loadRoutineExercises, volume, best1RM } = useWorkoutActions(user?.id ?? 0);
   const [showSheet, setShowSheet] = useState(false);
   const [finishing, setFinishing] = useState(false);
+  const [routineLoaded, setRoutineLoaded] = useState(false);
   const [summary, setSummary] = useState<{ workout: Workout; volume: number; best1RM: number; totalSets: number } | null>(null);
   const [elapsed, setElapsed] = useState('00:00:00');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Auto-load esercizi dalla scheda
+  useEffect(() => {
+    if (!routineId || routineLoaded || !user?.id) return;
+    setRoutineLoaded(true);
+    loadRoutineExercises(routineId);
+  }, [routineId, routineLoaded, user?.id, loadRoutineExercises]);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -50,9 +61,11 @@ export default function ActiveWorkoutPage() {
   if (summary) return <WorkoutSummary {...summary} />;
   if (!user?.id) return null;
 
+  const isFromRoutine = !!routineId;
+
   return (
     <div className="min-h-screen bg-bg">
-      {/* Sticky header with back button */}
+      {/* Sticky header */}
       <div className="sticky top-0 z-30 bg-surface border-b border-border px-4 py-3 flex items-center gap-3">
         <button
           onClick={() => router.back()}
@@ -76,7 +89,7 @@ export default function ActiveWorkoutPage() {
         </div>
       </div>
 
-      {/* Legend per i tipi di serie */}
+      {/* Legenda tipi serie */}
       <div className="px-4 pt-3 pb-1 flex items-center gap-3 flex-wrap">
         <span className="text-[10px] text-t2 font-semibold uppercase tracking-wide">Tipi serie:</span>
         {[
@@ -92,9 +105,15 @@ export default function ActiveWorkoutPage() {
         ))}
       </div>
 
-      {/* Esercizi — pb grande per non finire sotto il floating button + bottom nav */}
+      {/* Esercizi */}
       <div className="px-4 pt-3 pb-48 space-y-3">
-        {exercises.length === 0 && (
+        {exercises.length === 0 && isFromRoutine && (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-t2 text-sm font-medium">Caricamento esercizi...</p>
+          </div>
+        )}
+        {exercises.length === 0 && !isFromRoutine && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 bg-accent-light rounded-2xl flex items-center justify-center mb-4">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -104,15 +123,25 @@ export default function ActiveWorkoutPage() {
             <p className="text-t2 text-sm font-medium">Aggiungi il primo esercizio</p>
           </div>
         )}
+
         {exercises.map((ae) => (
           <ExerciseCard key={ae.exercise.id} activeExercise={ae} userId={user.id} />
         ))}
-        <Button fullWidth size="lg" variant="secondary" onClick={() => setShowSheet(true)}>
-          + Aggiungi Esercizio
-        </Button>
+
+        {/* Aggiungi esercizio extra — sempre disponibile */}
+        {exercises.length > 0 && (
+          <Button fullWidth size="lg" variant="secondary" onClick={() => setShowSheet(true)}>
+            + Aggiungi Esercizio Extra
+          </Button>
+        )}
+        {!isFromRoutine && exercises.length === 0 && (
+          <Button fullWidth size="lg" variant="secondary" onClick={() => setShowSheet(true)}>
+            + Aggiungi Esercizio
+          </Button>
+        )}
       </div>
 
-      {/* Floating action area: above bottom nav (bottom nav ≈ 88px) + gap */}
+      {/* Floating: Termina */}
       <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-[96px] pt-3 bg-gradient-to-t from-bg/95 to-bg/0 pointer-events-none">
         <div className="pointer-events-auto">
           <Button
@@ -131,5 +160,13 @@ export default function ActiveWorkoutPage() {
       <RestTimer />
       {showSheet && <AddExerciseSheet userId={user.id} onClose={() => setShowSheet(false)} />}
     </div>
+  );
+}
+
+export default function ActiveWorkoutPage() {
+  return (
+    <Suspense>
+      <ActiveWorkoutContent />
+    </Suspense>
   );
 }

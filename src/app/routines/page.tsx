@@ -12,6 +12,7 @@ import Link from 'next/link';
 
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
 const DAY_FULL  = ['Lunedi', 'Martedi', 'Mercoledi', 'Giovedi', 'Venerdi', 'Sabato', 'Domenica'];
+const DAY_SHORT = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
 
 export default function RoutinesPage() {
   const { user } = useTelegram();
@@ -22,6 +23,7 @@ export default function RoutinesPage() {
   const [day, setDay] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [reschedulingId, setReschedulingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -76,6 +78,28 @@ export default function RoutinesPage() {
       haptic('error');
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function rescheduleRoutine(id: string, newDay: number | null) {
+    if (!user?.id) return;
+    try {
+      const res = await fetch(`/api/routines/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.id, day_of_week: newDay }),
+      });
+      if (!res.ok) {
+        showToast('Errore aggiornamento giorno', 'error');
+        return;
+      }
+      setRoutines((prev) =>
+        prev.map((r) => r.id === id ? { ...r, day_of_week: newDay as typeof r.day_of_week } : r)
+      );
+      setReschedulingId(null);
+      haptic('success');
+    } catch {
+      showToast('Errore aggiornamento giorno', 'error');
     }
   }
 
@@ -248,7 +272,7 @@ export default function RoutinesPage() {
                     return (
                       <div
                         key={r.id}
-                        className="flex items-center justify-between overflow-hidden"
+                        className="overflow-hidden"
                         style={{
                           background: 'var(--bg-secondary)',
                           borderRadius: 'var(--radius-md)',
@@ -256,44 +280,102 @@ export default function RoutinesPage() {
                           boxShadow: 'var(--shadow-card)',
                         }}
                       >
-                        <div style={{ width: 4, alignSelf: 'stretch', background: 'var(--accent-primary)', flexShrink: 0 }} />
+                        <div className="flex items-center justify-between">
+                          <div style={{ width: 4, alignSelf: 'stretch', background: 'var(--accent-primary)', flexShrink: 0 }} />
 
-                        <Link href={`/routines/${r.id}`} className="flex-1 min-w-0 px-4 py-4">
-                          <p className="font-extrabold truncate" style={{ color: 'var(--text-primary)' }}>
-                            {r.title}
-                          </p>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-                            {exCount} esercizi
-                          </p>
-                        </Link>
+                          <Link href={`/routines/${r.id}`} className="flex-1 min-w-0 px-4 py-4">
+                            <p className="font-extrabold truncate" style={{ color: 'var(--text-primary)' }}>
+                              {r.title}
+                            </p>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                              {exCount} esercizi
+                            </p>
+                          </Link>
 
-                        <div className="flex items-center gap-2 pr-3 shrink-0">
-                          <Link href={`/workout?routine=${r.id}`}>
+                          <div className="flex items-center gap-2 pr-3 shrink-0">
+                            {/* Reschedule day button */}
                             <button
-                              className="flex items-center justify-center"
+                              onClick={() => setReschedulingId(reschedulingId === r.id ? null : r.id)}
+                              className="flex items-center justify-center transition-all"
+                              title="Cambia giorno"
                               style={{
                                 width: 40, height: 40,
-                                background: 'var(--accent-primary)',
-                                color: 'var(--text-on-accent)',
+                                color: reschedulingId === r.id ? 'var(--accent-primary)' : 'var(--text-secondary)',
                                 borderRadius: 'var(--radius-md)',
-                                boxShadow: 'var(--shadow-accent)',
                               }}
                             >
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <polygon points="5 3 19 12 5 21 5 3" />
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
                               </svg>
                             </button>
-                          </Link>
-                          <button
-                            onClick={() => deleteRoutine(r.id)}
-                            className="flex items-center justify-center transition-all"
-                            style={{ width: 40, height: 40, color: 'var(--danger)', opacity: 0.5, borderRadius: 'var(--radius-md)', fontSize: 20 }}
-                            onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
-                          >
-                            ×
-                          </button>
+                            <Link href={`/workout?routine=${r.id}`}>
+                              <button
+                                className="flex items-center justify-center"
+                                style={{
+                                  width: 40, height: 40,
+                                  background: 'var(--accent-primary)',
+                                  color: 'var(--text-on-accent)',
+                                  borderRadius: 'var(--radius-md)',
+                                  boxShadow: 'var(--shadow-accent)',
+                                }}
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                  <polygon points="5 3 19 12 5 21 5 3" />
+                                </svg>
+                              </button>
+                            </Link>
+                            <button
+                              onClick={() => deleteRoutine(r.id)}
+                              className="flex items-center justify-center transition-all"
+                              style={{ width: 40, height: 40, color: 'var(--danger)', opacity: 0.5, borderRadius: 'var(--radius-md)', fontSize: 20 }}
+                              onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+                              onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+                            >
+                              ×
+                            </button>
+                          </div>
                         </div>
+
+                        {/* Inline day picker */}
+                        {reschedulingId === r.id && (
+                          <div className="px-4 pb-3 pt-1 border-t" style={{ borderColor: 'var(--border)' }}>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>
+                              Sposta in giorno
+                            </p>
+                            <div className="flex gap-1.5 flex-wrap">
+                              {DAY_SHORT.map((label, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => rescheduleRoutine(r.id, r.day_of_week === i ? null : i)}
+                                  className="w-9 h-9 rounded-xl text-xs font-bold transition-all"
+                                  style={{
+                                    background: r.day_of_week === i ? 'var(--accent-primary)' : 'var(--bg-primary)',
+                                    color: r.day_of_week === i ? 'var(--text-on-accent)' : 'var(--text-secondary)',
+                                    border: `1px solid ${r.day_of_week === i ? 'var(--accent-primary)' : 'var(--border)'}`,
+                                  }}
+                                >
+                                  {label}
+                                </button>
+                              ))}
+                              {r.day_of_week !== null && r.day_of_week !== undefined && (
+                                <button
+                                  onClick={() => rescheduleRoutine(r.id, null)}
+                                  className="px-3 h-9 rounded-xl text-xs font-bold transition-all"
+                                  style={{
+                                    background: 'var(--bg-primary)',
+                                    color: 'var(--danger)',
+                                    border: '1px solid var(--border)',
+                                  }}
+                                >
+                                  Rimuovi
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}

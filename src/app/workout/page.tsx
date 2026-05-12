@@ -40,7 +40,7 @@ function WorkoutStartContent() {
     if (!user?.id) return;
     setLoading(true);
     const id = await createWorkout(routineId);
-    if (id) router.push(`/workout/${id}`);
+    if (id) router.push(`/workout/${id}${routineId ? `?routine=${routineId}` : ''}`);
     setLoading(false);
   }
 
